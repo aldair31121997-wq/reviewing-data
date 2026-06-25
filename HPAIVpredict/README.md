@@ -1,0 +1,91 @@
+# HPAIVpredict
+
+`HPAIVpredict` is designed to predict the aquisition of insertions in a given influenza H5/H7 RNA sequence, according to our slippage model. Two steps are required:
+
+* the first is the calculation of backtrack DG values of each position (using a python script);
+* the second is the use of a multivariate regresion model on the first step results, to obtain insertions that are likely to occur and an associated graphical representation.
+
+
+## Dependencies
+
+To run `HPAIVpredict`, please ensure that the following dependencies are satisfied.
+
+## Python packages
+
+The script `inserpredictor.py` script was tested on Python 2.7 but should be fine with more recent versions of Python.
+
+* [ViennaRNA](https://pypi.org/project/ViennaRNA/) (version 2.7.2)
+* [pandas](https://pandas.pydata.org/) (version 3.1.0)
+* [numpy](https://numpy.org/) (version 2.4.0)
+* [statsmodels](https://www.statsmodels.org/stable/api.html) (version 0.14.6)
+* [Bio.Seq](https://biopython.org/docs/1.75/api/Bio.Seq.html) (version 1.74)
+
+
+### R packages
+
+* [readxl](https://readxl.tidyverse.org/) (version 1.5.0)
+* [stats](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/00Index.html) (version 4.6.0)
+* [ggplot2](https://ggplot2.tidyverse.org/) (version 4.0.3)
+* [ggrepel](https://ggrepel.slowkow.com/) (version 0.9.8)
+* [ggthemes](https://ggplot2.tidyverse.org/reference/ggtheme.html) (version 4.0.3)
+* [dplyr](https://dplyr.tidyverse.org/) (version 1.2.1)
+* [bioseq](https://cran.r-project.org/web/packages/bioseq/index.html) (version 0.1.5)
+* [stringi](https://cran.r-project.org/web/packages/stringi/index.html) (version 1.8.7)
+* [writexl](https://cran.r-project.org/web/packages/writexl/index.html) (version 1.5.4)
+* [ggpubr](https://cran.r-project.org/web/packages/ggpubr/index.html) (version 0.6.3)
+
+
+## 1st step: Get backtrack scores
+
+The sequence used for the prediction must be available in `fasta`. It is recommended that only small regions of a given RNA sequence are predicted since the algorithm grows exponentially with the sequence length and the number of sequences to predict. The step is performed using:
+
+```
+inserpredictor.py PATH_TO_SEQUENCE_FILE.fasta start stop correction
+```
+
+with:
+
+| **argument** | **value** |
+| ------------ | --------- |
+| `start`      | sequence position at which to start the algorithm |
+| `stop`       | sequence position at which to stop the algorithm |
+| `correction` | new position assigned to the start position |
+
+
+**Example**:
+
+```
+python3 inserpredictor.py data/allviruses.fasta 26 85 986
+```
+
+**TODO: DOCUMENT WHERE TO FIND allviruses.fasta (see TODO file)**
+
+**Value**:
+
+The script creates two files (`prediction.xlsx` and `predictioncrna.xlsx`). The first corresponds to the backtrack positions during vRNA syntesis (with cRNA as the template), while the second corresponds to the backtrack positions during cRNA syntesis (with vRNA as the template).
+
+
+## 2nd step: Get prediction frequencies and scores
+
+We recommend to use [RStudio](https://posit.co/products/open-source/rstudio) to run the file `visualizator.Rmd`, the only thing you need to modify are the following lines:
+
+```
+VRNAinput <- "PATH_TO_PREDICTION_FILE.xlsx"
+CRNAinput <- "PATH_TO_PREDICTION_crna_FILE.xlsx"
+```
+
+where these two files are those obtained in the first step. The script outputs a table in `xlsx` format containing all the analyzed positions and estimated likelihoods of insertions. When a given insertion has a prediction score higher than the detection threshold ($10^{-5}$), the prediction column contains its estimated $\log_{10}$-frequency unless the position is filtered by the **TODO: GIVE A NAME TO THE FILTER** rule. In cases where the prediction score is lower than the detection threshold or is filtered by the **TODO** rule, the **TODO** column contains `BELOWtreshold`. 
+
+In addition, the script creates the same type of plot than the plots shown in the article using a given window of visualization. **TODO: je ne comprends pas "window of visualization" et c'est à clarifier**
+
+
+## Additional information on the model fitting
+
+**TODO**
+
+
+# Note
+
+**TODO: add preprint citation**
+
+This version of `HPAIVpredict` (v 1.0.0) is the first to be published but not the last: A new version including substitution forecasting and furin-clevage scores is currently being developed. It will be released as a single user-friendly module and available via this repository send a mail to [aldair31121997@gmail.com](mailto:aldair3112
