@@ -1,0 +1,553 @@
+from ViennaRNA import RNA
+import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+from Bio.Seq import Seq
+
+
+
+
+#create a full function for vrna/crna analysis the entering variables are the dataframe containing the sequences/sample name
+# A containing the inferior limit of analysis  and b containing the superior limit of analysis here they are 1030 and 1100. C is the position corrector and depends on your sample, here i use the number 983
+
+def rawpredictor(references, a, b, c):
+
+
+
+ # now get all the variables that will simulate the polimerase sliding trogh the RNA
+ 
+ templates=references["sample"].unique()
+ sisterstrand="CCCCCCCCC"
+ m=1
+ infi=0
+ infi2=0
+ decalagesplus=pd.DataFrame(columns=['interna',"DeltaG"])
+ prediction= pd.DataFrame(columns=['cRNA', 'vRNA', 'imperectpair', 'decalage', 'deltaG', "pos", "insertion","sample","DDG","structure"]) 
+ predictioncrna= pd.DataFrame(columns=['cRNA', 'vRNA', 'imperectpair', 'decalage', 'deltaG', "pos", "insertion","sample","DDG","structure"]) 
+ size=9
+ size1=10
+ size2=10
+ #first iterative step read the list of templates sequence by sequence
+ for v in (range(len(templates))):
+  line2="" 
+  rnaseq = references["sequence"][v]
+  rnaseq = rnaseq[a:b]
+  rnaseq = rnaseq.replace('T', 'U')
+  #if you want the vRNA
+  rnaseq2 = str(Seq(rnaseq).reverse_complement())
+  rnaseq2 = rnaseq2.replace('T', 'U')
+  #to get the coñpleñetary strand of vRNA
+  rnaseqcomp = str(Seq(rnaseq).complement())
+  rnaseqcomp2 = str(Seq(rnaseq2).complement())
+  name = references["sample"][v]
+  #print(rnaseq)
+  #print(rnaseqcomp)
+  #print("longitud de secuencia",len(rnaseq))
+  #print(name)
+ #sliding window seq
+  swindow= 1
+#space taken by the polimerase,
+  footprint = 20
+#this variable is to define the two interacting sequences, the & tells the algorithm that we are comparing two
+#different sequences
+  uloop = '&'
+
+############################################################################################################
+
+ #read the lenght of the RNA seq
+
+  Length = len(rnaseq)
+
+#this is the start point of iteration, it will be defined at the begining 
+
+  i= 1
+
+
+#end replication bubble sequence and add 1, because sequence count starts at 0
+
+  End = int((Length - size) / swindow)
+  #print("the end is:", End)
+ 
+
+#start iteration between sequences to form structure
+
+  for i in range(9, End-9):
+
+   decalage1=sisterstrand
+   structure=["j","j","j","j","j","j","j","j","j","&","j","j","j","j","j","j","j","j","j"]
+   structuredec1=["j","j","j","j","j","j","j","j","j","&","j","j","j","j","j","j","j","j","j"]
+   structuredec1m=["j","j","j","j","j","j","j","j","j","&","j","j","j","j","j","j","j","j","j"]
+
+  #here you define the catalitic site inside the RNA pol 
+   cataliticsite = rnaseq[i:i+size]
+   cataliticsite2 = rnaseq2[i:i+size]
+   decalageminus1= rnaseq[i-1:i+size-1]
+   if i>1:
+    decalageminus2= rnaseq[i-2:i+size-2]
+   else:
+    decalageminus2=decalageminus1
+   invsisterstrand = rnaseqcomp[i:i+size]
+   invsisterstrand2 = rnaseqcomp2[i:i+size]
+   #inverse the reversed sister strand to have the proper sense 5'3'
+   sisterstrand = invsisterstrand[::-1]
+   sisterstrand2 = invsisterstrand2[::-1]
+   #this for creates the interaction between template and product in ((..)) notation, this is during vRNA syntesis
+   for j in range(len(cataliticsite)):
+     if (cataliticsite[j]=="A") & (sisterstrand[size-(j+1)] == "U"):
+         structure[j]= "("
+         structure[j+size+1]=")"
+     elif (cataliticsite[j]=="U") & (sisterstrand[size-(j+1)] == "A"):
+         structure[j]= "("
+         structure[j+size+1]=")"
+     elif (cataliticsite[j]=="G") & (sisterstrand[size-(j+1)] == "C"):
+         structure[j]= "("
+         structure[j+size+1]=")"
+     elif (cataliticsite[j]=="C") & (sisterstrand[size-(j+1)] == "G"):
+         structure[j]= "("
+         structure[j+size+1]=")"
+     else:
+         structure[j]="."
+         structure[j+size+1]="."
+      
+ ############################################################################################
+   line="---------"
+   perfectpair=0
+   for s in range(size1):
+    structurep= ["j","j","j","j","j","j","j","j","j","&","j","j","j","j","j","j","j","j","j"]
+    cataliticsitep = rnaseq[i+s:i+size+s] 
+    for h in range(len(cataliticsitep)):
+     if (cataliticsitep[h]=="A") & (sisterstrand[size-(h+1)] == "U"):
+         structurep[h]= "("
+         structurep[18-h]=")"
+     elif (cataliticsitep[h]=="U") & (sisterstrand[size-(h+1)] == "A"):
+         structurep[h]= "("
+         structurep[18-h]=")"
+     elif (cataliticsitep[h]=="G") & (sisterstrand[size-(h+1)] == "C"):
+         structurep[h]= "("
+         structurep[18-h]=")"
+     elif (cataliticsitep[h]=="C") & (sisterstrand[size-(h+1)] == "G"):
+         structurep[h]= "("
+         structurep[18-h]=")"
+     elif (cataliticsitep[h]=="U") & (sisterstrand[size-(h+1)] == "G"):
+         structurep[h]= "("
+         structurep[18-h]=")"
+     elif (cataliticsitep[h]=="G") & (sisterstrand[size-(h+1)] == "U"):
+         structurep[h]= "("
+         structurep[18-h]=")"
+     else:
+         structurep[h]="."
+         structurep[18-h]="."
+    #print(decalagesplus["interna"][s])
+    #print(f"structuredec{s}p")
+    structurep="".join(structurep)
+    deltaGdecalp=RNA.eval_structure_simple(cataliticsitep+"&"+sisterstrand, structurep)
+    decalagesplus.loc[s]= [structurep] + [deltaGdecalp]
+    #print(line+line2,sisterstrand[::-1],decalagesplus["DeltaG"][s], "inserpos",[i+c], "insertedsseq", cataliticsite[0:s], structurep)
+    #line=line+"-"
+    #extract all data of predictions if the DeltaG is favorable.
+    #prediction= pd.DataFrame(columns=['cRNA', 'vRNA', 'imperectpair', 'decalage', 'deltaG', "pos", "insertion"])
+    #if(decalagesplus["DeltaG"][s]) < 1:
+    prediction.loc[infi]= [cataliticsite] + [sisterstrand[::-1]] + [cataliticsitep+"&"+sisterstrand] + [s] + [decalagesplus["DeltaG"][s]] + [i+c] + [cataliticsite[0:s]] + [name] + [(decalagesplus["DeltaG"][s] - perfectpair)] + [structurep]
+    infi=infi+1
+   #get the deltaG of the perfect pairing for calculation of DDG
+    if s==0:
+     perfectpair= deltaGdecalp
+#analsis of the cRNA syntesis, new version copresed the fist external FOR iterates over each posible decalage
+#the second INTERNAL FOR iterates over each nucleotide inside the catalitic site to determine the structure
+   perfectpair=0
+   for l in range(size2):
+    structurem= ["j","j","j","j","j","j","j","j","j","&","j","j","j","j","j","j","j","j","j"]
+    cataliticsitem = rnaseq2[i+l:i+size+l] 
+    for h in range(len(cataliticsitem)):
+     if (cataliticsitem[h]=="A") & (sisterstrand2[size-(h+1)] == "U"):
+         structurem[h]= "("
+         structurem[18-h]=")"
+     elif (cataliticsitem[h]=="U") & (sisterstrand2[size-(h+1)] == "A"):
+         structurem[h]= "("
+         structurem[18-h]=")"
+     elif (cataliticsitem[h]=="G") & (sisterstrand2[size-(h+1)] == "C"):
+         structurem[h]= "("
+         structurem[18-h]=")"
+     elif (cataliticsitem[h]=="C") & (sisterstrand2[size-(h+1)] == "G"):
+         structurem[h]= "("
+         structurem[18-h]=")"
+     elif (cataliticsitem[h]=="U") & (sisterstrand2[size-(h+1)] == "G"):
+         structurem[h]= "("
+         structurem[18-h]=")"
+     elif (cataliticsitem[h]=="G") & (sisterstrand2[size-(h+1)] == "U"):
+         structurem[h]= "("
+         structurem[18-h]=")"
+     else:
+         structurem[h]="."
+         structurem[18-h]="."
+    #print(decalagesplus["interna"][s])
+    #print(f"structuredec{s}p")
+    structurem="".join(structurem)
+    deltaGdecalm=RNA.eval_structure_simple(cataliticsitem+"&"+sisterstrand2, structurem)
+   #decalagesplus.loc[s]= [structurep] + [deltaGdecalp]
+    cataliticsiteinv= cataliticsite2[::-1]
+    #print(sisterstrand, deltaGdecalm, [i+(c-9)], "inserted seq", cataliticsiteinv[0:l], "raw",cataliticsiteinv, name)
+    vrnainser=cataliticsiteinv[0:l]
+    line=line+"-"
+   #if(deltaGdecalm) < 1:
+    predictioncrna.loc[infi2]= [cataliticsite] + [sisterstrand[::-1]] + [cataliticsitem+"&"+sisterstrand2] + [l+1] + [deltaGdecalm] + [i+(c-9)] + [str(Seq(cataliticsite2[0:l]).complement())] + [name] + [(deltaGdecalm - perfectpair)] + [structurem]
+    infi2=infi2+1
+    if l==0:
+     perfectpair= deltaGdecalm
+#############################################################################33
+   nucleotide= rnaseq[i+8]
+   #i = + swindow
+   line2=line2+"-"
+   m = m + 1
+##close .txt file that deltaG values were written to
+#f.close()
+ #rint ("Done %s" % (name))
+#print(j)
+#correct the decalage of CRNA
+ predictioncrna["decalage"]=(predictioncrna["decalage"]-1)
+    
+ return(prediction, predictioncrna)
+
+
+
+
+###create a function for aditional treatment of thermodinamical pathways
+
+
+def pathway(prediction):
+    
+ prediction["neighbor"]= 100
+
+ for i in range(len(prediction)-7):
+  if (prediction["decalage"][i] > 1 & prediction["decalage"][i] < 9):
+       prediction["neighbor"][i]= prediction["DDG"][i-1] + prediction["DDG"][i+1]
+  if (prediction["decalage"][i] ==1):
+       prediction["neighbor"][i]= prediction["DDG"][i+1]
+  if (prediction["decalage"][i] ==9):
+       prediction["neighbor"][i]= prediction["DDG"][i-1]
+    
+ #print(prediction.to_string())
+
+ #create a new column for the neighbor variable direct block
+ prediction["neighborblock"]= 100
+ prediction["equilibrated"]=1
+ prediction["pathway"]=1
+ prediction["pathwayb"]=1
+ prediction["falsepos"]=prediction["pos"]
+ for i in range(len(prediction)-1):      
+    
+  if (prediction["decalage"][i] > 1 & prediction["decalage"][i] < 9):
+       prediction["neighborblock"][i]= prediction["DDG"][i-1]
+  if (prediction["decalage"][i] ==1):
+       prediction["neighborblock"][i]= prediction["DDG"][i]
+  if (prediction["decalage"][i] ==9):
+       prediction["neighborblock"][i]= prediction["DDG"][i-1]
+  #create a new variable to iterate over the neighborhod an search for previos stable states
+  acumulation=1
+  if (prediction["decalage"][i]>3):
+  
+   for j in range(prediction["decalage"][i]-1):
+        #print(i-(j+1))
+        #print(i)
+        acumulation=acumulation*prediction["deltaG"][i-(j+1)]
+     #this line compares the new point with the old and registers the biggest one
+
+        #print(prediction["sample"][i], prediction["pos"][i], prediction["insertion"][i], prediction["decalage"][i], prediction["equilibrated"][i])
+        prediction["equilibrated"][i]=acumulation
+  #finally create the unmapping variable analysis
+
+###########################################################"""
+  neighborc=1
+  neighbord=1
+  if (prediction["decalage"][i]>3):
+  
+   for j in range(prediction["decalage"][i]):
+     #this line compares the new point with the old and registers the biggest one
+        if (neighborc < prediction["deltaG"][i-(j+1)]):
+         neighborc=(prediction["deltaG"][i-(j+1)]+0.1)
+ #make the same but with DDG
+        if (neighbord < prediction["DDG"][i-(j+1)]):
+         neighbord=(prediction["DDG"][i-(j+1)]+0.1)
+
+   prediction["pathway"][i] = neighborc+0.1
+   prediction["pathwayb"][i] = neighbord+0.1
+        
+ #create a new column with the sequence data
+ prediction['template'] = prediction['insertion'].astype(str).str[0]   
+
+ #finalize creating the data regarding the template and the pseudo mapping simmulation
+    
+ for i in range(len(prediction)):
+#  print(i)
+  if (i<1):
+      dummypos=prediction["pos"][i]
+
+  if ((i > 1) & (prediction["template"][i]=="A") ):
+    
+
+    if ((prediction["template"][i-2]!="A") & (prediction["decalage"][i-2]!=0)):
+         dummypos=prediction["pos"][i]
+        #print(dummypos)
+    if ((prediction["template"][i-2]=="A") | (prediction["decalage"][i-2]==0)):
+         prediction["falsepos"][i]=dummypos
+        #print("strech")
+        
+#last add the match mismatch rules, with different categorical variables A, B, C, D,
+
+ prediction["matchmismatch"]= "NOVALUE"
+ 
+ for i in range(len(prediction)-7):
+    #First case penality mismatches D
+      if ((prediction["imperectpair"][i][0]=="A") & (prediction["imperectpair"][i][18]=="G")):
+       prediction["matchmismatch"][i]="D"
+      if ((prediction["imperectpair"][i][0]=="G") & (prediction["imperectpair"][i][18]=="A")):
+       prediction["matchmismatch"][i]="D"
+      if ((prediction["imperectpair"][i][0]=="G") & (prediction["imperectpair"][i][18]=="G")):
+       prediction["matchmismatch"][i]="D"
+      if ((prediction["imperectpair"][i][0]=="C") & (prediction["imperectpair"][i][18]=="C")):
+       prediction["matchmismatch"][i]="D"
+      if ((prediction["imperectpair"][i][0]=="A") & (prediction["imperectpair"][i][18]=="A")):
+       prediction["matchmismatch"][i]="D"    
+    
+   #second case tolerated mismatches C-A, U-U, C-U VALUE B
+      if ((prediction["imperectpair"][i][0]=="C") & (prediction["imperectpair"][i][18]=="A")):
+       prediction["matchmismatch"][i]="C"
+      if ((prediction["imperectpair"][i][0]=="A") & (prediction["imperectpair"][i][18]=="C")):
+       prediction["matchmismatch"][i]="C"
+      if ((prediction["imperectpair"][i][0]=="U") & (prediction["imperectpair"][i][18]=="U")):
+       prediction["matchmismatch"][i]="C"
+      if ((prediction["imperectpair"][i][0]=="C") & (prediction["imperectpair"][i][18]=="U")):
+       prediction["matchmismatch"][i]="C"
+      if ((prediction["imperectpair"][i][0]=="U") & (prediction["imperectpair"][i][18]=="C")):
+       prediction["matchmismatch"][i]="C"
+  #third case matches with no plus value A-U, G-C, 
+      if ((prediction["imperectpair"][i][0]=="C") & (prediction["imperectpair"][i][18]=="G")):
+       prediction["matchmismatch"][i]="B"
+      if ((prediction["imperectpair"][i][0]=="G") & (prediction["imperectpair"][i][18]=="C")):
+       prediction["matchmismatch"][i]="B"
+      if ((prediction["imperectpair"][i][0]=="A") & (prediction["imperectpair"][i][18]=="U")):
+       prediction["matchmismatch"][i]="B"
+      if ((prediction["imperectpair"][i][0]=="U") & (prediction["imperectpair"][i][18]=="A")):
+       prediction["matchmismatch"][i]="B"
+      if ((prediction["imperectpair"][i][0]=="U") & (prediction["imperectpair"][i][18]=="G")):
+       prediction["matchmismatch"][i]="B"
+      if ((prediction["imperectpair"][i][0]=="G") & (prediction["imperectpair"][i][18]=="U")):
+       prediction["matchmismatch"][i]="B"
+  #fourt case create, adenine insertions inside a poli-A stretch 
+      if ((prediction["insertion"][i]=="A") & (prediction["insertion"][i+3]=="AAAA") ):
+       prediction["matchmismatch"][i]="A"
+
+  
+        
+  
+ return(prediction)   
+
+
+#############analysis for window of 10 nt ########################################################################################
+
+def rawpredictoralt(references, a, b, c):
+
+
+
+ # now get all the variables that will simulate the polimerase sliding trogh the RNA
+ #for v in virus[0:18]:
+     #mask_virus = ((df['sample'] == v)
+ #output files for bubles in txt files
+ templates=references["sample"].unique()
+ sisterstrand="CCCCCCCCC"
+ m=1
+ infi=0
+ infi2=0
+ decalagesplus=pd.DataFrame(columns=['interna',"DeltaG"])
+ prediction= pd.DataFrame(columns=['cRNA', 'vRNA', 'imperectpair', 'decalage', 'deltaG', "pos", "insertion","sample","DDG","structure"]) 
+ predictioncrna= pd.DataFrame(columns=['cRNA', 'vRNA', 'imperectpair', 'decalage', 'deltaG', "pos", "insertion","sample","DDG","structure"]) 
+ size=10
+ size1=11
+ size2=11
+ #f= open("deltaGvalues.txt","w+")
+ for v in (range(len(templates))):
+  line2="" 
+  rnaseq = references["sequence"][v]
+  rnaseq = rnaseq[a:b]
+  rnaseq = rnaseq.replace('T', 'U')
+  #if you want the vRNA
+  rnaseq2 = str(Seq(rnaseq).reverse_complement())
+  #to get the coñpleñetary strand of vRNA
+  rnaseqcomp = str(Seq(rnaseq).complement())
+  rnaseqcomp2 = str(Seq(rnaseq2).complement())
+  name = references["sample"][v]
+  #print(rnaseq)
+  #print(rnaseqcomp)
+  #print("longitud de secuencia",len(rnaseq))
+  #print(name)
+ #sliding window seq
+  swindow= 1
+#space taken by the polimerase,
+  footprint = 20
+#this variable is to define the two interacting sequences, the & tells the algorithm that we are comparing two
+#different sequences
+  uloop = '&'
+
+############################################################################################################
+
+ #read the lenght of the RNA seq
+
+  Length = len(rnaseq)
+
+#this is the start point of iteration, it will be defined at the begining 
+
+  i= 1
+
+
+#end bubble sequence and add 1, because sequence count starts at 0
+
+  End = int((Length - size) / swindow)
+  #print("the end is:", End)
+ 
+  #print(name)
+
+#start iteration between sequences to forñ structure
+
+  for i in range(9, End-9):
+
+   decalage1=sisterstrand
+   structure=["j","j","j","j","j","j","j","j","j","j","&","j","j","j","j","j","j","j","j","j","j"]
+   structuredec1=["j","j","j","j","j","j","j","j","j","j","&","j","j","j","j","j","j","j","j","j","j"]
+   structuredec1m=["j","j","j","j","j","j","j","j","j","j","&","j","j","j","j","j","j","j","j","j","j"]
+
+  #catalitic site inside the RNA pol 
+   cataliticsite = rnaseq[i:i+size]
+   cataliticsite2 = rnaseq2[i:i+size]
+   decalageminus1= rnaseq[i-1:i+size-1]
+   if i>1:
+    decalageminus2= rnaseq[i-2:i+size-2]
+   else:
+    decalageminus2=decalageminus1
+   invsisterstrand = rnaseqcomp[i:i+size]
+   invsisterstrand2 = rnaseqcomp2[i:i+size]
+   #inverse the reversed sister strand to have the proper sense 5'3'
+   sisterstrand = invsisterstrand[::-1]
+   sisterstrand2 = invsisterstrand2[::-1]
+   #this for creates the structure
+   for j in range(len(cataliticsite)):
+     if (cataliticsite[j]=="A") & (sisterstrand[size-(j+1)] == "U"):
+         structure[j]= "("
+         structure[j+size+1]=")"
+     elif (cataliticsite[j]=="U") & (sisterstrand[size-(j+1)] == "A"):
+         structure[j]= "("
+         structure[j+size+1]=")"
+     elif (cataliticsite[j]=="G") & (sisterstrand[size-(j+1)] == "C"):
+         structure[j]= "("
+         structure[j+size+1]=")"
+     elif (cataliticsite[j]=="C") & (sisterstrand[size-(j+1)] == "G"):
+         structure[j]= "("
+         structure[j+size+1]=")"
+     else:
+         structure[j]="."
+         structure[j+size+1]="."
+      
+ ############################################################################################
+   line="---------"
+   perfectpair=0
+   for s in range(size1):
+    structurep= ["j","j","j","j","j","j","j","j","j","j","&","j","j","j","j","j","j","j","j","j","j"]
+    cataliticsitep = rnaseq[i+s:i+size+s] 
+    for h in range(len(cataliticsitep)):
+     if (cataliticsitep[h]=="A") & (sisterstrand[size-(h+1)] == "U"):
+         structurep[h]= "("
+         structurep[20-h]=")"
+     elif (cataliticsitep[h]=="U") & (sisterstrand[size-(h+1)] == "A"):
+         structurep[h]= "("
+         structurep[20-h]=")"
+     elif (cataliticsitep[h]=="G") & (sisterstrand[size-(h+1)] == "C"):
+         structurep[h]= "("
+         structurep[20-h]=")"
+     elif (cataliticsitep[h]=="C") & (sisterstrand[size-(h+1)] == "G"):
+         structurep[h]= "("
+         structurep[20-h]=")"
+     elif (cataliticsitep[h]=="U") & (sisterstrand[size-(h+1)] == "G"):
+         structurep[h]= "("
+         structurep[20-h]=")"
+     elif (cataliticsitep[h]=="G") & (sisterstrand[size-(h+1)] == "U"):
+         structurep[h]= "("
+         structurep[20-h]=")"
+     else:
+         structurep[h]="."
+         structurep[20-h]="."
+    #print(decalagesplus["interna"][s])
+    #print(f"structuredec{s}p")
+    structurep="".join(structurep)
+    deltaGdecalp=RNA.eval_structure_simple(cataliticsitep+"&"+sisterstrand, structurep)
+    decalagesplus.loc[s]= [structurep] + [deltaGdecalp]
+    #print(line+line2,sisterstrand[::-1],decalagesplus["DeltaG"][s], "inserpos",[i+c], "insertedsseq", cataliticsite[0:s], structurep)
+    #line=line+"-"
+    #extract all data of predictions if the DeltaG is favorable.
+    #prediction= pd.DataFrame(columns=['cRNA', 'vRNA', 'imperectpair', 'decalage', 'deltaG', "pos", "insertion"])
+    #if(decalagesplus["DeltaG"][s]) < 1:
+    prediction.loc[infi]= [cataliticsite] + [sisterstrand[::-1]] + [cataliticsitep+"&"+sisterstrand] + [s] + [decalagesplus["DeltaG"][s]] + [i+c] + [cataliticsite[0:s]] + [name] + [(decalagesplus["DeltaG"][s] - perfectpair)] + [structurep]
+    infi=infi+1
+   #get the deltaG of the perfect pairing for calculation of DDG
+    if s==0:
+     perfectpair= deltaGdecalp
+#analsis of the -1....-n decalage, new version copresed the fist external FOR iterates over each posible decalage
+#the second INTERNAL FOR iterates over each nucleotide inside the catalitic site to determine the structure
+   perfectpair=0
+   for l in range(size2):
+    structurem= ["j","j","j","j","j","j","j","j","j","j","&","j","j","j","j","j","j","j","j","j","j"]
+    cataliticsitem = rnaseq2[i+l:i+size+l] 
+    for h in range(len(cataliticsitem)):
+     if (cataliticsitem[h]=="A") & (sisterstrand2[size-(h+1)] == "U"):
+         structurem[h]= "("
+         structurem[20-h]=")"
+     elif (cataliticsitem[h]=="U") & (sisterstrand2[size-(h+1)] == "A"):
+         structurem[h]= "("
+         structurem[20-h]=")"
+     elif (cataliticsitem[h]=="G") & (sisterstrand2[size-(h+1)] == "C"):
+         structurem[h]= "("
+         structurem[20-h]=")"
+     elif (cataliticsitem[h]=="C") & (sisterstrand2[size-(h+1)] == "G"):
+         structurem[h]= "("
+         structurem[20-h]=")"
+     elif (cataliticsitem[h]=="U") & (sisterstrand2[size-(h+1)] == "G"):
+         structurem[h]= "("
+         structurem[20-h]=")"
+     elif (cataliticsitem[h]=="G") & (sisterstrand2[size-(h+1)] == "U"):
+         structurem[h]= "("
+         structurem[20-h]=")"
+     else:
+         structurem[h]="."
+         structurem[20-h]="."
+    #print(decalagesplus["interna"][s])
+    #print(f"structuredec{s}p")
+    structurem="".join(structurem)
+    deltaGdecalm=RNA.eval_structure_simple(cataliticsitem+"&"+sisterstrand2, structurem)
+   #decalagesplus.loc[s]= [structurep] + [deltaGdecalp]
+    cataliticsiteinv= cataliticsite2[::-1]
+    #print(sisterstrand, deltaGdecalm, [i+(c-9)], "inserted seq", cataliticsiteinv[0:l], "raw",cataliticsiteinv, name)
+    vrnainser=cataliticsiteinv[0:l]
+    line=line+"-"
+   #if(deltaGdecalm) < 1:
+    predictioncrna.loc[infi2]= [cataliticsite] + [sisterstrand[::-1]] + [cataliticsitem+"&"+sisterstrand] + [l+1] + [deltaGdecalm] + [i+(c-9)] + [str(Seq(cataliticsite2[0:l]).complement())] + [name] + [(deltaGdecalm - perfectpair)] + [structurem]
+    infi2=infi2+1
+    if l==0:
+     perfectpair= deltaGdecalm
+#############################################################################33
+   nucleotide= rnaseq[i+9]
+   #i = + swindow
+   line2=line2+"-"
+   m = m + 1
+##close .txt file that deltaG values were written to
+#f.close()
+ #rint ("Done %s" % (name))
+#print(j)
+#correct the decalage of CRNA
+ predictioncrna["decalage"]=(predictioncrna["decalage"]-1)
+    
+ return(prediction, predictioncrna)
+
+
+
+
+
+
+    
