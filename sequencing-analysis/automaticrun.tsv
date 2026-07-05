@@ -1,0 +1,3 @@
+alignRef	Sample	read1in	read2in
+/home/amartinez/work/HTS/50-602571423/ref/HA.full.ShimH5_24a2b.fasta	Shim24a2b-MDCK-R1	/home/amartinez/work/HTS/50-602571423/rawdata/MDCK-977-PAHAShimH524a2b_R1_001.fastq.gz	/home/amartinez/work/HTS/50-602571423/rawdata/MDCK-977-PAHAShimH524a2b_R2_001.fastq.gz	
+/home/amartinez/work/HTS/50-602571423/ref/HA.full.ShimH5_24a2b.fasta	Shim24a2b-DF1	/home/amartinez/work/HTS/50-602571423/rawdata/DF1-977-PAHAShimH524a2b_R1_001.fastq.gz	/home/amartinez/work/HTS/50-602571423/rawdata/DF1-977-PAHAShimH524a2b_R2_001.fastq.gz
