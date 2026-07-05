@@ -12,7 +12,7 @@ To run `HPAIVpredict`, please ensure that the following dependencies are satisfi
 
 ## Python packages
 
-The script `inserpredictor.py` script was tested on Python 2.7 but should be fine with more recent versions of Python.
+The script `inserpredictor.py` script was tested on Python 3.7 but should be fine with more recent versions of Python.
 
 * [ViennaRNA](https://pypi.org/project/ViennaRNA/) (version 2.7.2)
 * [pandas](https://pandas.pydata.org/) (version 3.1.0)
