@@ -58,7 +58,9 @@ with:
 python3 inserpredictor.py data/allviruses.fasta 26 85 986
 ```
 
-**TODO: DOCUMENT WHERE TO FIND allviruses.fasta (see TODO file)**
+**WHERE TO FIND allviruses.fasta**
+
+the HA partial sequences used on this study, can be found at the data/ folder
 
 **Value**:
 
