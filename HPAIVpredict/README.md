@@ -62,7 +62,7 @@ python3 inserpredictor.py data/allviruses.fasta 26 85 986
 
 **Value**:
 
-The script creates two files (`prediction.xlsx` and `predictioncrna.xlsx`). The first corresponds to the backtrack positions during vRNA syntesis (with cRNA as the template), while the second corresponds to the backtrack positions during cRNA syntesis (with vRNA as the template).
+The script creates two files (`predictiontest.xlsx` and `predictioncrnatest.xlsx`). The first corresponds to the backtrack positions during vRNA syntesis (with cRNA as the template), while the second corresponds to the backtrack positions during cRNA syntesis (with vRNA as the template).
 
 
 ## 2nd step: Get prediction frequencies and scores
@@ -70,8 +70,8 @@ The script creates two files (`prediction.xlsx` and `predictioncrna.xlsx`). The 
 We recommend to use [RStudio](https://posit.co/products/open-source/rstudio) to run the file `visualizator.Rmd`, the only thing you need to modify are the following lines:
 
 ```
-VRNAinput <- "PATH_TO_PREDICTION_FILE.xlsx"
-CRNAinput <- "PATH_TO_PREDICTION_crna_FILE.xlsx"
+VRNAinput <- "PATH_TO_PREDICTIONTEST_FILE.xlsx"
+CRNAinput <- "PATH_TO_PREDICTION_crnaTEST_FILE.xlsx"
 ```
 
 where these two files are those obtained in the first step. The script outputs a table in `xlsx` format containing all the analyzed positions and estimated likelihoods of insertions. When a given insertion has a prediction score higher than the detection threshold ($10^{-5}$), the prediction column contains its estimated $\log_{10}$-frequency unless the position is filtered by the `slippage accesibilty` rule. In cases where the prediction score is lower than the detection threshold or is filtered by the `slippage accesibilty` rule, the prediction column contains `BELOWtreshold`. 
