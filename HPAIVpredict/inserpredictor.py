@@ -2,7 +2,7 @@
 # load modules
 import pandas as pd
 import numpy as np
-import INSERpredict2 as INSER
+import INSERpredict3 as INSER
 import argparse
 from ViennaRNA import RNA
 
