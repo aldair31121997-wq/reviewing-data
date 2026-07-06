@@ -74,14 +74,16 @@ VRNAinput <- "PATH_TO_PREDICTION_FILE.xlsx"
 CRNAinput <- "PATH_TO_PREDICTION_crna_FILE.xlsx"
 ```
 
-where these two files are those obtained in the first step. The script outputs a table in `xlsx` format containing all the analyzed positions and estimated likelihoods of insertions. When a given insertion has a prediction score higher than the detection threshold ($10^{-5}$), the prediction column contains its estimated $\log_{10}$-frequency unless the position is filtered by the **TODO: GIVE A NAME TO THE FILTER** rule. In cases where the prediction score is lower than the detection threshold or is filtered by the **TODO** rule, the **TODO** column contains `BELOWtreshold`. 
+where these two files are those obtained in the first step. The script outputs a table in `xlsx` format containing all the analyzed positions and estimated likelihoods of insertions. When a given insertion has a prediction score higher than the detection threshold ($10^{-5}$), the prediction column contains its estimated $\log_{10}$-frequency unless the position is filtered by the `slippage accesibilty` rule. In cases where the prediction score is lower than the detection threshold or is filtered by the `slippage accesibilty` rule, the prediction column contains `BELOWtreshold`. 
 
-In addition, the script creates the same type of plot than the plots shown in the article using a given window of visualization. **TODO: je ne comprends pas "window of visualization" et c'est à clarifier**
+In addition, the script creates the same type of plot than the plots shown in the article using a given window of visualization. this window corresponds to the positions in the HA 
+predicted and obseved (going from nucleotide position 1012 to 1030)
 
 
 ## Additional information on the model fitting
 
-**TODO**
+Model training and fitting are aviable at de model-details/ folder, wich contains the Rscript used to generate the linear regresion and the table containing 
+the insertions and corresponent DDG/DG match/mistmatch values used for training. 
 
 
 # Note
