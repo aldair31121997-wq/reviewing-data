@@ -17,7 +17,7 @@ library(broom)
 
 
 #here set the working directory that you're working on 
-setwd("D:/rnarep")
+setwd("YOUR WORK DIR")
 
 
 
