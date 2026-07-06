@@ -1,0 +1,723 @@
+---
+title: "visualizator.rmd"
+author: "Aldair Martinez Pineda"
+date: "2026-03-26"
+output: html_document
+---
+
+```{r}
+
+#load necesary packages
+library(readxl)
+library(stats)
+#library(car)
+library(ggplot2)
+library(ggrepel)
+library(ggthemes)
+library(dplyr)
+library(bioseq)
+library(stringi)
+library(writexl)
+library(ggpubr)
+setwd("D:/rnarep") # here you need to add your working dir
+
+
+
+predictionH5<-read_excel("predictiontest.xlsx")
+predictionH5crna<-read_excel("predictioncrnatest.xlsx")
+
+
+#positions are not properly posed
+predictionH5$pos<-predictionH5$pos+1
+
+
+predictionH5crna$pos<-predictionH5crna$pos+1
+
+
+
+Model_linReg3.1<- readRDS("Model_linReg3.1.rds")
+
+
+
+
+
+
+```
+
+
+```{r}
+
+
+####################functions of code.
+
+
+#create a function for the calculus of the codon analysis
+
+  databasepredictor<-function(predictions, neighbornum, neighborblocknum, modelselect, blocked, codon, orientation, correctionfactor) {
+
+#create value for mismatch analysis
+    
+  targets<-predictions
+  targets$match<-1
+  targets[substr(targets$structure, 1, 1) ==".",]$match<-0
+  targets$template <-gsub('T','U', targets$template)
+
+#get only the columns of interest from or objetive sequence
+
+  variables<-data.frame(DDG=targets$DDG, match= targets$match, adenine= targets$insertion, decalage=targets$decalage, neighbor =  targets$neighbor, matchmismatch= targets$matchmismatch)
+
+#replace NA values for x
+
+  variables[is.na(variables$adenine),]$adenine<-"X"
+
+#transform the adenine column to 1 if the insertion is single adenine, and to 0 if it's different
+
+  variables[variables$adenine=="A",]$adenine<-1
+  variables[variables$adenine!=1,]$adenine<-0
+  variables$adenine<- as.numeric(variables$adenine)
+  
+  
+  
+  
+if (orientation=="crna"){
+    
+    
+targets$pos=(rev(targets$pos) + correctionfactor)
+targets$falsepos=targets$pos
+
+}
+#predict the insertion frequency 
+
+  targets$predictedfreq <- predict.lm(modelselect, newdata=variables)
+
+#create the vector containing samples
+
+  samples<-unique(targets$sample)
+
+#create the mask to select values
+  masktargets2<-(targets$predictedfreq>-20 & targets$decalage!=0)
+
+  predictionscutm<- targets[masktargets2,]
+
+#change all predicted values that have a frequency not favorable by backtrack to -6
+  if (blocked=="yes"){
+      masktargets3<-(predictionscutm$pathway>2.5 | predictionscutm$neighbor>=neighbornum | predictionscutm$neighborblock>=neighborblocknum | predictionscutm$equilibrated<1 | predictionscutm$pathwayb>7.4)
+      predictionscutm[masktargets3,]$predictedfreq=-6
+  }
+  
+  if (codon=="yes") {
+    predictionscutm[nchar(predictionscutm$insertion) %% 3 != 0,]$predictedfreq=-6 
+    
+  }
+
+#this creates the logaritmic scale
+
+
+
+#finally agrupate all positions using the sum of posibilities inside a position 
+  predictionscutm$predictedfreqdec=10**(predictionscutm$predictedfreq)
+  
+#codon asignation for values with no insertions.
+  
+  
+ predictionscutm$falsepos<-predictionscutm$pos
+  
+ selected8A<-unique(predictionscutm[grep(c("8A|RKKR"), predictionscutm$sample),]$sample)
+ selected6A<-unique(predictionscutm[grep("6A", predictionscutm$sample),]$sample)
+ selectedShim24a2b<-unique(predictionscutm[grep("Shim24a2b", predictionscutm$sample),]$sample)
+ 
+ predictionscutm[predictionscutm$insertion=="A" & ((predictionscutm$sample %in% selected8A) | (predictionscutm$sample %in% selectedShim24a2b)),]$falsepos<-1017
+ predictionscutm[predictionscutm$insertion=="AA" & ((predictionscutm$sample %in% selected8A) | (predictionscutm$sample %in% selectedShim24a2b)),]$falsepos<-1017
+ predictionscutm[predictionscutm$insertion=="AAA" & ((predictionscutm$sample %in% selected8A) | (predictionscutm$sample %in% selectedShim24a2b)),]$falsepos<-1017
+ predictionscutm[predictionscutm$insertion=="AAAA" & ((predictionscutm$sample %in% selected8A) | (predictionscutm$sample %in% selectedShim24a2b)),]$falsepos<-1017
+ predictionscutm[predictionscutm$insertion=="AAAAA" & ((predictionscutm$sample %in% selected8A) | (predictionscutm$sample %in% selectedShim24a2b)),]$falsepos<-1017
+ predictionscutm[predictionscutm$insertion=="AAAAAA" & ((predictionscutm$sample %in% selected8A) | (predictionscutm$sample %in% selectedShim24a2b)),]$falsepos<-1017
+ predictionscutm[predictionscutm$insertion=="AAAAAAA" & ((predictionscutm$sample %in% selected8A) | (predictionscutm$sample %in% selectedShim24a2b)),]$falsepos<-1017
+ predictionscutm[predictionscutm$insertion=="AAAAAAAA" & ((predictionscutm$sample %in% selected8A) | (predictionscutm$sample %in% selectedShim24a2b)),]$falsepos<-1017
+
+
+ 
+ 
+ predictionscutm[predictionscutm$insertion=="A" & (predictionscutm$sample %in% selected6A),]$falsepos<-1019
+ predictionscutm[predictionscutm$insertion=="AA" & (predictionscutm$sample %in% selected6A),]$falsepos<-1019
+ predictionscutm[predictionscutm$insertion=="AAA" & (predictionscutm$sample %in% selected6A),]$falsepos<-1019
+ predictionscutm[predictionscutm$insertion=="AAAA" & (predictionscutm$sample %in% selected6A),]$falsepos<-1019
+ predictionscutm[predictionscutm$insertion=="AAAAA" & (predictionscutm$sample %in% selected6A),]$falsepos<-1019
+ predictionscutm[predictionscutm$insertion=="AAAAAA" & (predictionscutm$sample %in% selected6A),]$falsepos<-1019
+ predictionscutm[predictionscutm$insertion=="AAAAAAA" & (predictionscutm$sample %in% selected6A),]$falsepos<-1019
+ predictionscutm[predictionscutm$insertion=="AAAAAAAA" & (predictionscutm$sample %in% selected6A),]$falsepos<-1019
+ 
+ #do the same for the PR8
+ 
+ predictionscutm[predictionscutm$insertion=="A" & (predictionscutm$sample=="PR8-C6a"),]$falsepos<-1013
+ predictionscutm[predictionscutm$insertion=="AA" & (predictionscutm$sample=="PR8-C6a"),]$falsepos<-1013
+  predictionscutm[predictionscutm$insertion=="AAA" & (predictionscutm$sample=="PR8-C6a"),]$falsepos<-1013
+
+ 
+ 
+
+
+ predictionscutm[(predictionscutm$decalage>7) & (predictionscutm$sample =="EF-8A") & (predictionscutm$pos>1011) & (predictionscutm$pos<1014),]$falsepos<-1013
+ 
+ 
+#create the variable to agregate, transforming the log of observations to absolute frequency 
+
+ predictionscutm$predictedfreqlog<- 10**(predictionscutm$predictedfreq)
+ 
+ 
+ 
+ #modify the insertion variable to resemble real event annotation
+ 
+ predictionscutm$insertion<-paste(as.character(predictionscutm$decalage), predictionscutm$insertion, sep = "")
+
+
+#agregate the variables that share the same dummypos, decalage, sample, insertion, usign 
+
+ predictionscutmfalse<-(aggregate(predictedfreqdec ~ falsepos + sample + insertion + template + decalage, data = predictionscutm, FUN = sum, na.rm = TRUE))
+ 
+ 
+ predictionscutmfalse[predictionscutmfalse$predictedfreqdec<10**-5,]$predictedfreqdec<-10**-7
+
+
+  
+  
+  return(predictionscutmfalse)
+
+  }
+
+
+
+mergecrnaetvrna<-function(vrnacutsum, crnacutsum) {
+  
+
+
+  
+  crnaplusvrna<-merge(vrnacutsum, crnacutsum, by.x=c("pos", "sample"), by.y=c("pos", "sample"), all=T)
+  
+  crnaplusvrna[is.na(crnaplusvrna$predictedfreq.x),]$predictedfreq.x<-min(vrnacutsum$predictedfreq)
+  crnaplusvrna[is.na(crnaplusvrna$predictedfreq.y),]$predictedfreq.y<-min(vrnacutsum$predictedfreq)
+
+  
+  crnaplusvrna[is.na(crnaplusvrna$HPAA.x),]$HPAA.x<-"N"
+  crnaplusvrna[is.na(crnaplusvrna$HPAA.y),]$HPAA.y<-"N"
+
+  
+  crnaplusvrna$predictedfreq=pmax(crnaplusvrna$predictedfreq.x, crnaplusvrna$predictedfreq.y)
+  crnaplusvrna$HPAA=paste(crnaplusvrna$HPAA.x, crnaplusvrna$HPAA.y, sep = ",")
+  
+  
+  #corrige the motifs that have NA values using dplyr, waring sintaxis change
+  
+  crnaplusvrna <- crnaplusvrna %>% mutate(wtmotifs = coalesce(wtmotifs.x, wtmotifs.y))
+  
+  crnaplusvrna <- crnaplusvrna %>% mutate(motifs = coalesce(motifs.x, motifs.y))
+  
+  crnaplusvrna <- crnaplusvrna %>% mutate(sampleshort = coalesce(sampleshort.x, sampleshort.y))
+
+  crnaplusvrna <-crnaplusvrna[order(crnaplusvrna$sample, crnaplusvrna$pos, decreasing = FALSE), ]
+  
+  #view(crnaplusvrna)
+  
+  return(crnaplusvrna)
+
+#get the biggest value from each sense 
+
+  #allpredictionscut$predictedfreq.z=pmax(allpredictionscut$predictedfreq.x, allpredictionscut$predictedfreq.y)
+  
+}
+
+
+
+inserorganizer <- function(df) {
+  
+  library(dplyr)
+  
+  # Filas que participarán en la agrupación
+  df_work <- df %>%
+    filter(predictedfreqdec > 1e-6) %>%
+    mutate(
+      insertion_key = sapply(insertion, function(x) {
+        
+        seq_part <- gsub("^[0-9]+", "", x)
+        
+        paste(
+          sort(strsplit(seq_part, "")[[1]]),
+          collapse = ""
+        )
+      })
+    ) %>%
+    group_by(sample, insertion_key) %>%
+    mutate(
+      totalfreq = sum(predictedfreqdec, na.rm = TRUE),
+      maxfalsepos = max(falsepos, na.rm = TRUE),
+      predictedfreqdec = ifelse(
+        falsepos == maxfalsepos,
+        totalfreq,
+        1e-7
+      )
+    ) %>%
+    ungroup() %>%
+    select(-insertion_key, -totalfreq, -maxfalsepos)
+  
+  # Filas ignoradas
+  df_ignore <- df %>%
+    filter(predictedfreqdec <= 1e-6)
+  
+  # Reconstruir el dataframe original
+  df_out <- bind_rows(df_work, df_ignore) %>%
+    arrange(as.numeric(rownames(.)))
+  
+  df_out<-as.data.frame(df_out)
+  
+  return(df_out)
+  
+  
+  
+}
+
+
+inserorganizerv2 <- function(df) {
+  
+  library(dplyr)
+  
+  df <- df %>%
+    mutate(.rowid = row_number())
+  
+  df_work <- df %>%
+    filter(predictedfreqdec > 1e-6) %>%
+    mutate(
+      insertion_key = sapply(insertion, function(x) {
+        seq_part <- gsub("^[0-9]+", "", x)
+        paste(sort(strsplit(seq_part, "")[[1]]), collapse = "")
+      })
+    ) %>%
+    group_by(sample, insertion_key) %>%
+    mutate(
+      totalfreq = sum(predictedfreqdec, na.rm = TRUE),
+      keep_row = row_number() == which.max(predictedfreqdec),
+      predictedfreqdec = ifelse(keep_row, totalfreq, 1e-7)
+    ) %>%
+    ungroup() %>%
+    select(-insertion_key, -totalfreq, -keep_row)
+  
+  df_ignore <- df %>%
+    filter(predictedfreqdec <= 1e-6)
+  
+  df_out <- bind_rows(df_work, df_ignore) %>%
+    arrange(.rowid) %>%
+    select(-.rowid) %>%
+    as.data.frame()
+  
+  return(df_out)
+}
+
+
+
+plotinsertions<-function(toplot, CS, start, end) {
+  
+  
+ plotinser<-ggplot(toplot, aes(y = predictedfreqdec, x = falsepos))  + 
+facet_wrap(~sample, ncol = 2, scales="free") + scale_y_log10() + theme(panel.spacing = unit(0, 'points')) + theme(panel.border = element_rect(fill = "transparent", # Needed to add the border
+color = "black", linewidth = 1)) +
+  geom_vline(xintercept = CS, col = "gray", linetype = "dashed", size=0.7) + theme_tufte() + theme(axis.line=element_line(), strip.text = element_text(size=11, family = "Arial"),  axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1), text = element_text(size = 13, family = "Arial")) + scale_y_log10(limits=c(2*10**-6.5,2*10**-1)) +
+  scale_x_continuous(limits=c(start,end), breaks = toplot$falsepos) + geom_segment(aes(   x = falsepos, 
+                   xend = falsepos, 
+                      y = 2*10**-6, 
+                   yend = predictedfreqdec), 
+                   size = 10, 
+                   alpha = 0.8,
+                   color = "cyan4",
+               show.legend =F) + geom_hline(yintercept = 2*10**-6, col = "brown", linetype = "dashed", size=0.7) + annotate("text", x = c(CS), y =c(2*10**-1), label = c("HA1  HA2") , color="violetred",size=3 , angle=0, fontface="bold") +
+   geom_label_repel(aes(label=insertion), color="darkviolet" ,show.legend = FALSE, size=3.5, check_overlap = T, fontface="bold", force = 0.002, force_pull = 4, max.overlaps = 25) + geom_text(aes(x=falsepos, y= 2*10**-6.5, label=template), color="violetred" ,show.legend = FALSE, family="Arial") + scale_color_hue(direction = -1, h.start = 80) 
+
+ 
+  
+  
+  
+  
+    return(plotinser)
+  
+  
+  
+}
+
+
+
+
+```
+
+```{r}
+
+
+#this line predicts the insertions in your example sequences, and creates the xlsx ouput containing all insertions that should be obseved in a given sequence.
+predictionH5[predictionH5$matchmismatch=="NOVALUE",]$matchmismatch<-"D"
+
+
+
+
+#preidction match/ mismatch adjustment
+
+
+predictionH5crna[predictionH5crna$matchmismatch=="NOVALUE",]$matchmismatch<-"D"
+
+
+
+
+###here you divide H5 and H7 virus as they have a different numeric scale and 
+
+#get the list of H7 an H5 for romain
+
+H7romain<-c("H7-seekingsDB3", "H7-2015", "H7N9-wyoming", "H7-seekingsDB1", "H7-seekingsDB2", "H7-seekingsDB1", "H7-england-orignial", "H7-england-6A", "H7-seekings-original")
+
+
+
+
+
+codonmal<-databasepredictor(predictionH5, 15.5, 9, Model_linReg3.1, blocked = "no", codon = "no",orientation = "vrna", correctionfactor = "N")
+
+codon<-databasepredictor(predictionH5, 15.5, 9, Model_linReg3.1, blocked = "yes", codon = "no",orientation = "vrna", correctionfactor = "N")
+
+codonromain<-databasepredictor(predictionH5[predictionH5$sample %in% H7romain,], 15.6, 9, Model_linReg3.1, blocked = "yes", codon = "no",orientation = "vrna", correctionfactor = "N")
+
+
+#now do the analysis for the vrna version of every part
+
+
+codoncrna<-databasepredictor(predictionH5crna, 15.5, 9, Model_linReg3.1, blocked = "yes", codon = "no",orientation = "crna", correctionfactor = 18)
+
+codoncrnamal<-databasepredictor(predictionH5crna, 15.5, 9, Model_linReg3.1, blocked = "no", codon = "no",orientation = "crna", correctionfactor = 18)
+
+codonromaincrna<-databasepredictor(predictionH5crna[predictionH5crna$sample %in% H7romain,], 15.5, 9, Model_linReg3.1, blocked = "yes", codon = "no",orientation = "crna", correctionfactor = 18)
+
+
+#final step 
+
+
+#codon<-mergecrnaetvrna(codon, codoncrna)
+
+codonmal$insertion<-substr(codonmal$insertion, 2, 10)
+codoncrnamal$insertion<-substr(codoncrnamal$insertion,2, 10)
+
+
+
+##organize insertions to graph
+
+
+
+
+
+#reduce the insertion variable 
+
+codon$nsertion<-substr(codon$insertion, 2, 12)
+
+codoncrna$insertion<-substr(codoncrna$insertion, 2, 12)
+
+
+
+###get the subset of H7 sequences.
+
+codonromain<-codon[codon$sample %in% H7romain,]
+
+codonromaincrna<-codonromaincrna[codonromaincrna$sample %in% H7romain,]
+
+
+#codon<-inserorganizerv2(codon)
+
+#codoncrna<-inserorganizerv2(codoncrna)
+
+
+
+```
+
+```{r, fig.height=13.5 , fig.width=12}
+
+#view crna, remove exrtreme values
+
+codon[codon$predictedfreqdec<10**-5,]$predictedfreqdec<-10**-7
+#codon$falsepos<-codon$pos
+
+
+#Mapp the insertions of GAA to the real position GAA over the arginine G
+
+codonromaincrna[codonromaincrna$insertion=="3AGA" & codonromaincrna$sample=="H7-seekingsDB3",]$predictedfreqdec<-(codonromaincrna[codonromaincrna$insertion=="3AGA" & codonromaincrna$sample=="H7-seekingsDB3",]$predictedfreqdec + codonromaincrna[codonromaincrna$insertion=="3AAG"& codonromaincrna$sample=="H7-seekingsDB3",]$predictedfreqdec)
+
+codonromaincrna[codonromaincrna$insertion=="3AGA",]$insertion<-"3GAA"
+
+codonromaincrna[codonromaincrna$insertion=="3GAA",]$falsepos<-1021
+codonromaincrna[codonromaincrna$insertion=="3GAA",]$template<-"G"
+
+
+#codonromaincrna[codonromaincrna$insertion=="1A",]$falsepos<-1013
+
+
+codonromaincrna[codonromaincrna$insertion=="1A" & codonromaincrna$predictedfreqdec<10**-4,]$falsepos<-1000
+
+
+
+
+#REMOVE THE OTHER INSERTION FROM THE PLOT AS YOU already mapped it to the correct position 
+
+codonromaincrna[codonromaincrna$insertion=="3AAG",]$falsepos<-1000
+
+
+codonromain$falsepos<-(codonromain$falsepos-23)
+codonromaincrna$falsepos<-(codonromaincrna$falsepos-23)
+
+
+
+codonromain$insertion<-substr(codonromain$insertion, 2, 10)
+
+codonromaincrna$insertion<-substr(codonromaincrna$insertion, 2,10)
+
+
+
+windowsFonts(Arial = windowsFont("Arial"))
+
+
+
+codonromain<-inserorganizer(codonromain)
+
+codonromaincrna<-inserorganizer(codonromaincrna)
+
+##second mapping 
+
+
+codonromain[codonromain$sample=="H7-england-6A" & codonromain$falsepos==996 & codonromain$predictedfreqdec>10**-5, ]$falsepos<-990
+
+codonromain[codonromain$sample=="H7-england-6A" & codonromain$falsepos==996,]$template<-"G"
+    
+codonromaincrna[codonromaincrna$sample=="H7-england-6A" & codonromaincrna$falsepos==996,]$template<-"G"
+
+
+codonromaincrna[codonromaincrna$insertion=="A" & codonromaincrna$predictedfreqdec>10**-5,]$falsepos<-990
+
+codonromain[codonromain$insertion=="AAAA",]$falsepos<-990
+
+codonromaincrna[codonromaincrna$sample=="H7-england-6A" & codonromaincrna$falsepos==990,]$template<-"A"
+
+codonromain[codonromain$sample=="H7-england-6A" & codonromain$falsepos==990,]$template<-"A"
+
+
+
+saveromainvrna<-plotinsertions(codonromain, 999, 989, 1007)
+
+saveromaincrna<-plotinsertions(codonromaincrna, 999, 989, 1007)
+
+
+#ggsave(saveromaincrna, 
+#       filename = "H7-predictionandDB3crna-monocrom.png",
+#       device = "png",
+#       dpi = 400,
+#       limitsize = FALSE,
+#       height = 13.5, width = 12, units = "in")
+
+
+#ggsave(saveromainvrna, 
+#       filename = "H7-predictionandDB3vrna-monocrom.png",
+#       device = "png",
+#       dpi = 400,
+#       limitsize = FALSE,
+#       height = 13.5, width = 12, units = "in")
+
+
+
+
+
+
+
+suppressWarnings(print(saveromainvrna))
+
+suppressWarnings(print(saveromaincrna))
+
+
+
+```
+
+
+
+
+```{r, fig.height=65, fig.width=12}
+
+#view crna, remove exrtreme values
+
+#codon[codon$predictedfreqdec<10**-5,]$predictedfreqdec<-10**-7
+#codon$falsepos<-codon$pos
+
+windowsFonts(Arial = windowsFont("Arial"))
+
+#final mapping of H5 insertion 
+
+#codoncrna[codoncrna$falsepos==1024 & codoncrna$insertion=="A" & codoncrna$sample=="ShimA3",]$falsepos<-1013
+#codoncrna[codoncrna$falsepos==1024 & codoncrna$insertion=="AAC" & codoncrna$sample=="ShimA3",]$falsepos<-1022
+#codoncrna[codoncrna$falsepos==1023 & codoncrna$insertion=="AC" & codoncrna$sample=="ShimA3",]$falsepos<-1022
+
+#codoncrna[codoncrna$falsepos==1023 & codoncrna$insertion=="AC" & codoncrna$sample=="ShimA3",]$falsepos<-1022
+
+
+###add the template data to 
+
+
+
+
+plotvrna<-plotinsertions(codon, 1026, 1012, 1030)
+
+suppressWarnings(print(plotvrna))
+
+
+#eclipse long insertion in the extreme of poliA stretch as they are likely to be mapped in the 5' extreme of the poliA stretch during vRNA syntesis.
+
+
+#codoncrna[codoncrna$insertion=="AA",]$falsepos<-10
+#codoncrna[codoncrna$insertion=="AAA",]$falsepos<-10
+#codoncrna[codoncrna$insertion=="AAAA",]$falsepos<-10
+#codoncrna[codoncrna$insertion=="AAAAA",]$falsepos<-10
+#codoncrna[codoncrna$insertion=="AAAAAA",]$falsepos<-10
+
+
+
+codoncrna[codoncrna$insertion=="AGAAAA",]$falsepos<-10
+codoncrna[codoncrna$insertion=="AGAAAAA",]$falsepos<-10
+codoncrna[codoncrna$insertion=="AGAAAAAA",]$falsepos<-10
+#codoncrna[codoncrna$insertion=="TGG",]$insertion<-"UGG"
+
+
+
+
+plotcrna<-plotinsertions(codoncrna, 1026, 1012, 1030)
+
+suppressWarnings(print(plotcrna))
+
+
+
+
+#ggsave(plotvrna, 
+#       filename = "fullplotvrnaprediction-monocolorH5.png",
+#       device = "png",
+#       dpi = 400,
+#       limitsize = FALSE,
+#       height = 65, width = 12, units = "in")
+
+
+
+#ggsave(plotcrna, 
+#       filename = "fullplotcrnaprediction-monocolorH5.png",
+#       device = "png",
+#       dpi = 400,
+#       limitsize = FALSE,
+#       height = 66, width = 12, units = "in")
+
+
+
+
+
+
+
+
+
+```
+
+```{r, fig.height=55 , fig.width=12}
+
+setwd("D:/rnarep") # here you need to add your working dir
+
+
+#save the plots as a PNG figure.
+
+#view crna, remove exrtreme values
+
+#codon[codon$predictedfreqdec<10**-5,]$predictedfreqdec<-10**-7
+#codon$falsepos<-codon$pos
+
+windowsFonts(Arial = windowsFont("Arial"))
+
+#remove first character comptising the size of the insertion
+
+codonmal$insertion <- gsub("T", "U", codonmal$insertion)
+
+
+plotvrnamal<-plotinsertions(codonmal, 1026, 1012, 1030)
+
+suppressWarnings(print(plotvrnamal))
+
+
+
+#eclipse all the multiple of A insertions for visualization
+
+codoncrnamal[codoncrnamal$insertion=="A" & (codoncrnamal$sample %in% selected8A | codoncrnamal$sample %in% selectedShim24a2b),]$falsepos<-1017
+#codoncrnamal[codoncrnamal$insertion=="1A" & codoncrnamal$sample == "PR8-C6a",]$falsepos<-1013
+
+codoncrnamal[codoncrnamal$insertion=="AA",]$falsepos<-10
+codoncrnamal[codoncrnamal$insertion=="AAA",]$falsepos<-10
+codoncrnamal[codoncrnamal$insertion=="AAAA",]$falsepos<-10
+codoncrnamal[codoncrnamal$insertion=="AAAAA",]$falsepos<-10
+
+
+codoncrnamal$insertion <- gsub("T", "U", codoncrnamal$insertion)
+
+
+
+plotcrnamal<-plotinsertions(codoncrnamal, 1026, 1012, 1030)
+suppressWarnings(print(plotcrnamal))
+
+
+
+ggsave(plotvrnamal, 
+       filename = "fullplotvrnaprediction-noposthoc-monocolor.png",
+       device = "png",
+       dpi = 400,
+       limitsize = FALSE,
+       height = 66, width = 12, units = "in")
+
+
+
+ggsave(plotcrnamal, 
+       filename = "fullplotcrnaprediction-noposthoc-monocolor.png",
+       device = "png",
+       dpi = 400,
+       limitsize = FALSE,
+       height = 66, width = 12, units = "in")
+
+
+
+
+
+```
+
+
+
+
+
+
+```{r}
+
+
+
+
+subsetpathway<-predictionH5[predictionH5$pos==1013 & predictionH5$sample %in% c("ShimH5", "Shim24a2b"),]
+
+
+
+plotdeltag<-(suppressWarnings(print(ggplot(subsetpathway, aes(y = deltaG, x = decalage))  + geom_point(aes(y = deltaG), color = "black") + geom_line() + geom_text(label=round(subsetpathway$deltaG, 4), y=-8) +
+facet_wrap(~sample, ncol = 1, scales="free") + theme(panel.spacing = unit(0, 'points')) + theme(panel.border = element_rect(fill = "transparent",
+color = "black", linewidth = 1)) + theme_tufte() + ylim(-10, 20) + geom_hline(yintercept = 0, col = "brown", linetype = "dashed", size=0.7) + scale_x_continuous(limits=c(0,9), breaks = subsetpathway$decalage) + theme(axis.line=element_line(), strip.text = element_text(size=11, family = "Arial"),  axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1), text = element_text(size = 13, family = "Arial")))) + geom_label(aes(label=insertion, y = -10,
+      color = insertion) ,show.legend = FALSE, size=2.5, check_overlap = T, fontface="bold") + geom_point(aes(y = DDG), color = "red") +
+  geom_line(aes(y = DDG), color = "red", linetype = "dashed")) + geom_hline(yintercept = 12, col = "blue", linetype = "dashed", size=0.7)
+
+
+
+plotdeltag
+ggsave(plotdeltag, 
+       filename = "posthocrulepos1013v2.png",
+       device = "png",
+       dpi = 400,
+       limitsize = FALSE,
+       height = 10, width = 12, units = "in")
+
+
+
+
+
+```
+
+
+
