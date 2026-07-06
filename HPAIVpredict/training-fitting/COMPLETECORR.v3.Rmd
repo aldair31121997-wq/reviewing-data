@@ -17,15 +17,19 @@ library(broom)
 
 
 #here set the working directory that you're working on 
-setwd("D:/rnarep")
+setwd("YOUR WORK DIR")
 
 
 
 
+#All charged files are aviable in the training-fitting/ folder and must be present in the work directory
 
 predictionrules<-read_excel("predictioncodonH5-vmod.xlsx")
+
 #full mapped data from shim
+
 datafullshim<-read_excel("allinsertions.xlsx")
+
 #full mapped data from 6A set
 
 predictionrules$pos<-predictionrules$pos+1
@@ -92,7 +96,7 @@ mergedfull[substr(mergedfull$structure, 1, 1) ==".",]$match<-0
 
 mergedfullmean<-(aggregate(logfreq ~ Realpos + sample2 + decalage + adenine + match + neighbor + DDG + deltaG + insertion.x1 + insertion.y + order1 +  neighborblock + pathway + equilibrated + matchmismatch, data = mergedfull, FUN = mean, na.rm = TRUE))
 
-# limit the neighbor variable for short insettionsr
+# limit the neighbor variable for short insettions
 
 
 
@@ -103,8 +107,6 @@ mergedfullmean<-(aggregate(logfreq ~ Realpos + sample2 + decalage + adenine + ma
 ```{r}
 
 
-
-#create first model to verify data integrity
 
 #remove noisi data from shimA3
 
