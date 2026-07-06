@@ -1,24 +1,32 @@
-# Instruction on how to calculate RNA structures.
+# RNA structure prediction
 
+## Transient (“trapping”) RNA structures
 
-# trapping structures / transient structures.
+Putative transient RNA structures, also referred to as trapping structures, were proposed in the studies by Funk *et al.* and French *et al.* These structures are predicted to form through interactions between the 3′ and 5′ regions of the template RNA while it is being copied by the viral RNA-dependent RNA polymerase (RdRp).
 
-this type of seondary RNA structure is presented in the paper of funk et al and French et al.
-it is formed by the interaction between the 3' extreme and the 5' extreme of the template RNA being copied by the
-RdRp, to calculate these structures using the paper data first download and install the slidingfold.py tool developed by Mathis Funk, aviable at:
+To calculate these structures using the dataset from this study, first download and install the `slidingfold.py` tool developed by Mathis Funk, available at:
+
 https://github.com/dr-funk/trapped-RdRp/tree/main/slidingfold
 
-once installed download the file allviruses.fasta and put in in the same folder as the instalation of slidingfold.py,
-then run slidingfold.py using the following comand:
+After installation, download the `allviruses.fasta` file provided in this repository and place it in the same directory as `slidingfold.py`.
 
-```
+Then run:
+
+```bash
 python3 slidingfold.py -t allviruses.fasta
-
 ```
 
+This command generates a TSV file containing the predicted transient RNA structures that may occur during HA replication at each analysed position. The analyses were performed using the version of `slidingfold.py` available in the github repository.
 
-# Stationary RNA structures
+## Stationary RNA structures
 
+Stationary RNA structures were predicted using the ViennaRNA RNAfold web server:
+
+http://rna.tbi.univie.ac.at/
+
+Select the **RNAfold Web Server** option and analyse individually the complete sequences contained in `sequences-stationarystructures.fasta`.
+
+Each sequence corresponds to an 80-nt window analysed in this study. Folding predictions were performed using the default parameters available on the RNAfold web server.
 
 
 
