@@ -60,7 +60,7 @@ python3 inserpredictor.py data/allviruses.fasta 26 85 986
 
 **WHERE TO FIND allviruses.fasta**
 
-the HA partial sequences used on this study, can be found at the data/ folder
+the HA partial sequences used on this study, can be found at the data/ folder under the name allviruses.fasta
 
 **Value**:
 
