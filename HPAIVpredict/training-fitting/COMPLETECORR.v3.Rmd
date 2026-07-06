@@ -12,96 +12,23 @@ library(ggplot2)
 library(ggrepel)
 library(ggthemes)
 library(dplyr)
-library(bioseq)
 library(stringi)
 library(broom)
 
+
+#here set the working directory that you're working on 
 setwd("D:/rnarep")
 
-datashimVRNA<-read_excel("merged.xlsx")
-prediction<-read_excel("prediction.xlsx")
-predictioncrna<-read_excel("predictioncrna.xlsx")
+
+
+
+
 predictionrules<-read_excel("predictioncodonH5-vmod.xlsx")
-prediction6a<-read_excel("prediction6.xlsx")
-predictioncrna6a<-read_excel("predictioncrna6.xlsx")
-predictionGU<-read_excel("predictionGU.xlsx")
-predictionGUcrna<-read_excel("predictioncrnaGU.xlsx")
-#maps from shim
-mappedatashim<-read_excel("insertionsmapped.xlsx")
 #full mapped data from shim
 datafullshim<-read_excel("allinsertions.xlsx")
 #full mapped data from 6A set
-datareal6A<-read_excel("insertion6Amapped.xlsx")
-datareal6Acomplete<-read_excel("completeinser6a.xlsx")
-#full mapped data from GU viruses
-datarealGU5A<-read_excel("insertiondfGU.xlsx")
-predictionfull<-read_excel("predictionfullproject.xlsx")
-allviruses<-read_excel("fullproject.xlsx")
 
 predictionrules$pos<-predictionrules$pos+1
-datashimVRNA$perfectpair=(datashimVRNA$DDG + datashimVRNA$deltaG)*-1
-datamerged <-read_excel("combinedvrna.xlsx")
-datamerged$perfectpair = (datamerged$DDG - datamerged$deltaG)*-1
-datamerged$decalage = nchar(datamerged$seq)
-#create the value of adenine, its important that adenine variable is only valid if the insertion is present inside an strech of 
-#adenines, if the insertion is not present in a strech, then the adenine will have the same behaivour than any other nucleotide
-datamerged$adenine = 0
-datamerged[datamerged$seq=="A",]$adenine<-1
-#create value for logistic regresion
-
-datamerged$treshold <- 0
-
-datamerged[datamerged$logfreq>-4.5,]$treshold<-1
-
-#create value for mismatch analysis
-datamerged$match<-1
-datamerged[substr(datamerged$structure, 1, 1) ==".",]$match<-0
-
-print(datamerged$adenine)
-print(datamerged$treshold)
-print(datamerged$match)
-
-#remove importance of decalage in short movements
-
-datamerged
-
-```
-
-
-
-
-
-```{r}
-#create first model to verify data integrity
-
-
-datamerged$perfectpair<- datamerged$deltaG - datamerged$DDG
-#logfreq -4.4
-
-#create the linear regresion model
-#set the reference variables
-
-datamerged$seq<-as.factor(datamerged$seq)
-#now to set the references.
-datamerged$seq <- relevel(datamerged$seq, ref = "A")
-
-#create tree models 
-Model_linReg<-lm(logfreq ~ DDG + adenine + neighbor,  data = datamerged[datamerged$logfreq>-4.4,])
-Model_linReg2<-lm(logfreq ~ DDG + adenine,  data = datamerged[datamerged$logfreq>-4.4,])
-Model_linReg3<-lm(logfreq ~ deltaG + perfectpair + adenine,  data = datamerged[datamerged$logfreq>-4.4,])
-
-
-#create a logistic regresion model for insertions with freq higher than
-Model_logReg<-glm(treshold ~ DDG + adenine + neighbor,  data = datamerged)
-
-summary(Model_linReg)
-summary(Model_linReg2)
-summary(Model_linReg3)
-
-with(summary(Model_logReg), 1 - deviance/null.deviance)
-
-
-
 
 
 
@@ -109,62 +36,6 @@ with(summary(Model_logReg), 1 - deviance/null.deviance)
 
 
 
-```{r}
-
-
-#visualize the good model 
-
-plotting.data<-data.frame(
-  DDG = datamerged$DDG,
-    decalage=datamerged$decalage,
-  adenine = datamerged$adenine,
-  neighbor = datamerged$neighbor,
-  match = datamerged$match,
-  deltaG = datamerged$deltaG,
-  perfectpair=datamerged$perfectpair) 
-plotting.data$predicted.y <- predict.lm(Model_linReg2, newdata=plotting.data)
-#add the model column to merged dataframe
-datamerged$predicted<-plotting.data$predicted.y
-#plotting.data$adenine <- as.factor(plotting.data$adenine)
-plotting.data$decalage <- as.factor(plotting.data$decalage)
-data.plot <- ggplot(datamerged, aes(x=DDG, y=logfreq)) +
-  geom_point()
-
-data.plot
-
-
-
-data.plot <- data.plot +
-  geom_point(data=plotting.data, aes(x=DDG, y=predicted.y, color=adenine), size=1.25)
-
-data.plot
-
-
-data.plot2<-ggplot(datamerged, aes(x=predicted, y=logfreq, color = sample)) +
-  geom_text(aes(label=seq), size=5) + geom_abline(lty = 2, color = "gray60", size = 1.5) +
-      geom_point(alpha = 0.3) +
-      labs(
-      x = "predicted frequency log10",
-      y = "observed frequency log10",
-      color = NULL,
-      title = "Predicted mutation frequency vs real mutation frequency",
-      legend = "Each virus has a different color",
-      family = "Arial"
-      ) +theme_tufte() +
-   scale_x_continuous(limits=c(-7,-1))  + theme(axis.line=element_line(), strip.text = element_text(size=13, family = "Arial"),  axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1), text = element_text(size = 13, family = "Arial"))
-
-data.plot2 
-
-
-#Save the dataplot with the most common insertions by position and excluding ShimA3
-
-ggsave(data.plot2, 
-       filename = "originalcorr.png",
-       device = "png",
-       dpi = 600,
-       height = 8, width = 12, units = "in")
-
-```
 
 
 
@@ -172,7 +43,6 @@ ggsave(data.plot2,
 #create the new joined dataframes using position, sample and size as grouping variables
 
 datafullshim$sample2<- gsub(".*HA(.+)-p.*", "\\1", datafullshim$sample)
-prediction$sample2<- prediction$sample
 predictionrules$sample2<-predictionrules$sample
 datafullshim$decalage<-as.numeric(substr(datafullshim$insertion, 1, 1))
 datafullshim$pos<-datafullshim$Realpos
@@ -211,12 +81,6 @@ mergedfull$logfreq= log10(mergedfull$FreqInser)
 
 mergedfull$adenine = 0
 mergedfull[mergedfull$order1=="A",]$adenine<-1
-#create value for logistic regresion
-
-mergedfull$treshold <- 0
-
-mergedfull[mergedfull$logfreq>-4.5,]$treshold<-1
-
 #create value for mismatch analysis
 mergedfull$match<-1
 mergedfull[substr(mergedfull$structure, 1, 1) ==".",]$match<-0
@@ -228,14 +92,9 @@ mergedfull[substr(mergedfull$structure, 1, 1) ==".",]$match<-0
 
 mergedfullmean<-(aggregate(logfreq ~ Realpos + sample2 + decalage + adenine + match + neighbor + DDG + deltaG + insertion.x1 + insertion.y + order1 +  neighborblock + pathway + equilibrated + matchmismatch, data = mergedfull, FUN = mean, na.rm = TRUE))
 
+# limit the neighbor variable for short insettionsr
 
-mergedfull[mergedfull$decalage<3,]$decalage<-1
-mergedfullmean[mergedfullmean$decalage<3,]$decalage<-1
 
-#remove neighbor effect from short insertions
-
-mergedfull[mergedfull$decalage<3,]$neighbor<-1
-mergedfullmean[mergedfullmean$decalage<3,]$neighbor<-1
 
 ```
 
@@ -243,44 +102,11 @@ mergedfullmean[mergedfullmean$decalage<3,]$neighbor<-1
 
 ```{r}
 
-#create first model to verify data integrity
-mergedfull$perfectpair<- mergedfull$deltaG - mergedfull$DDG
 
-
-#logfreq -4.4
-
-#create the linear regresion model
-#set the reference variables
-
-mergedfull$order1<-as.factor(mergedfull$order1)
-#now to set the references.
-mergedfull$order1 <- relevel(mergedfull$order1, ref = "A")
-
-#remove the A3 noisy insertions
-
-#mergedfull<-mergedfull[(mergedfull$sample2!="ShimA3"),]
-
-print(mergedfull)
-
-#create tree models 
-Model_linReg2<-lm(logfreq ~ DDG + adenine,  data = mergedfull[mergedfull$logfreq>-4.4,])
-
-#create a logistic regresion model for insertions with freq higher than
-Model_logReg2<-glm(treshold ~ DDG + adenine + neighbor + decalage + matchmismatch,  data = mergedfull)
-
-summary(Model_linReg2)
-summary(Model_logReg2)
-
-with(summary(Model_logReg), 1 - deviance/null.deviance)
-
-
-
-```
-```{r}
 
 #create first model to verify data integrity
 
-#remove data from shimA3
+#remove noisi data from shimA3
 
 
 mergedfullmean<-mergedfullmean[mergedfullmean$sample2!="ShimA3" | (mergedfullmean$insertion.y!="AA" & mergedfullmean$insertion.y!="AAA"),]
@@ -293,6 +119,7 @@ mergedfullmean<-mergedfullmean[mergedfullmean$sample2!="ShimA3" | (mergedfullmea
 
 falsepositives<-data.frame(Realpos=c(1012,1012), sample2=c("PR8-C6A","PR8-C6A"), decalage=c(2,3), adenine=c(0,0), match=c(0,0), neighbor=c(11,8), DDG=c(2.3,2.9), deltaG=c(-4.2,-3.6), insertion.x1=c("CA","CAA"), insertion.y=c("CA","CAA"), order1=c("A","A"), neighborblock=c(8,2), pathway=c(1,1), equilibrated=c(1,1), matchmismatch=c("D","D"), logfreq=c(-5.1, -5.2))
 
+
 #inflate the falsepositives
 
 falsepositives<- falsepositives[rep(seq_len(nrow(falsepositives)), 3), ]
@@ -300,13 +127,11 @@ falsepositives<- falsepositives[rep(seq_len(nrow(falsepositives)), 3), ]
 
 
 
-
-#logfreq -4.4
-
 #create the linear regresion model
 #set the reference variables
 
 mergedfullmean$order1<-as.factor(mergedfullmean$order1)
+
 #now to set the references
 mergedfullmean$order1 <- relevel(mergedfullmean$order1, ref = "A")
 
@@ -324,29 +149,15 @@ mergedfullmean2<-rbind(mergedfullmean[mergedfullmean$logfreq>-4.4,],falsepositiv
 
 
 
-#create tree models 
-Model_linReg3<-lm(logfreq ~  DDG + matchmismatch,  data = mergedfullmean2 )
-
-
-#version of model with no prediction of false positives
-
-Model_linReg3<-lm(logfreq ~  DDG + matchmismatch,  data =mergedfullmean[mergedfullmean$logfreq>-4.4,])
-
 Model_linReg3.1<-lm(logfreq ~  DDG + matchmismatch,  data =mergedfullmean2)
 
 
-Model_linReg4<-lm(logfreq ~  DDG + adenine + neighbor,  data =mergedfullmean[mergedfullmean$logfreq>-4.4,])
-
-#create a logistic regresion model for insertions with freq higher than
-
-summary(Model_linReg3)
-
-summary(Model_linReg4)
+#visualize the model results
 
 summary(Model_linReg3.1)
 
 
-saveRDS(Model_linReg3.1, file = "Model_linReg3.1.rds")
+#saveRDS(Model_linReg3.1, file = "Model_linReg3.1.rds")
 
 
 ```
@@ -359,53 +170,12 @@ saveRDS(Model_linReg3.1, file = "Model_linReg3.1.rds")
 #visualize the good model 
 
 
-mergedfullmean<-mergedfullmean[mergedfullmean$sample2!="ShimA3" | (mergedfullmean$insertion.y!="AA" & mergedfullmean$insertion.y!="AAA"),]
 
-
-plotting.data<-data.frame(
-  DDG = mergedfullmean2$DDG,
-    decalage=mergedfullmean2$decalage,
-  adenine = mergedfullmean2$adenine,
-  neighbor = mergedfullmean2$neighbor,
-  neighborblock= mergedfullmean2$neighborblock,
-  match = mergedfullmean2$match,
-  pathway = mergedfullmean2$pathway,
-  deltaG = mergedfullmean2$deltaG,
-  matchmismatch = mergedfullmean2$matchmismatch,
-  perfectpair = (mergedfullmean2$deltaG - mergedfullmean2$DDG)) 
-plotting.data$predicted.y <- predict.lm(Model_linReg3, newdata=plotting.data)
 #add the model column to merged dataframe
-mergedfullmean2$predicted<-plotting.data$predicted.y
-plotting.data$adenine <- as.factor(plotting.data$adenine)
-plotting.data$decalage <- as.factor(plotting.data$decalage)
-data.plot <- ggplot(mergedfullmean2, aes(x=DDG, y=logfreq)) +
-  geom_point()
 
-data.plot
-mergedfullmean2$predicted<-predict.lm(Model_linReg3, mergedfullmean2)
+
+
 mergedfullmean2$predicted31<-predict.lm(Model_linReg3.1, mergedfullmean2)
-
-
-data.plot <- data.plot +
-  geom_point(data=plotting.data, aes(x=DDG, y=predicted.y, color=adenine), size=1.25)
-
-data.plot
-
-
-data.plot2<-ggplot(mergedfullmean2, aes(x=predicted, y=logfreq, color = sample2)) +
-  geom_text(aes(label=order1), size=5) + geom_abline(lty = 2, color = "gray60", size = 1.5) +
-      geom_point(alpha = 0.3) +
-      labs(
-      x = "predicted frequency log10",
-      y = "observed frequency log10",
-      color = NULL,
-      title = "Predicted mutation frequency vs real mutation frequency",
-      legend = "Each virus has a different color",
-      family = "Arial"
-      ) +theme_tufte() + theme(axis.line=element_line(), strip.text = element_text(size=13, family = "Arial"),  axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1), text = element_text(size = 13, family = "Arial"))# +
-  # scale_x_continuous(limits=c(-7,-1))
-
-data.plot2 
 
 
 
@@ -425,163 +195,10 @@ data.plot3<-ggplot(mergedfullmean2, aes(x=predicted31, y=logfreq, color = sample
 data.plot3
 
 
-ggsave(data.plot2, 
-       filename = "originalcorrallinsertions.png",
+ggsave(data.plot3, 
+       filename = "predicted-vs-observed-insertion-Shimdata.png",
        device = "png",
        dpi = 600,
        height = 8, width = 12, units = "in")
-
-```
-```{r, fig.height=70, fig.width=16}
-#HEIGH 13
-
-#create second prediction for shimH5 derived viruses Shim24a2b, ShimA1, ShimA2, ShimA3, ShimA4
-selectedshim=c("Shim","ShimA1", "ShimA2", "ShimA3", "ShimA4", "Shim24a2b")
-#remove decalage effect in short insertions
-
-#target our objective sequence
-targets=predictionrules[predictionrules$pos>1000 & predictionrules$pos < 1040,]
-
-#targets=targets[targets$sample %in% selectedshim, ]
-
-#create value for mismatch analysis
-targets$match<-1
-targets[substr(targets$structure, 1, 1) ==".",]$match<-0
-
-#remove effect from neighbor variable when working with short sequences
-
-#targets[targets$decalage<3 & targets$neighbor<12,]$neighbor<-1
-
-#get only the columns of interest from or objetive sequence
-
-variables<-data.frame(DDG=targets$DDG, match= targets$match, adenine= targets$insertion, decalage=targets$decalage, neighbor = targets$neighbor, neighborblock=  targets$neighborblock, deltaG= targets$deltaG, perfectpair= (targets$deltaG - targets$DDG), matchmismatch = targets$matchmismatch, pathway= targets$pathway)
-
-#replace NA values for x
-
-variables[is.na(variables$adenine),]$adenine<-"X"
-
-#transform the adenine column to 1 if the insertion is single adenine, and to 0 if it's different
-
-variables[variables$adenine=="A" & lead(variables$adenine, default = "X", n = 3)=="AAAA",]$adenine<-1
-variables[variables$adenine!=1,]$adenine<-0
-variables$adenine<- as.numeric(variables$adenine)
-
-variables[variables$matchmismatch=="NOVALUE",]$matchmismatch<-"B"
-#predict the insertion frequency 
-
-targets$predictedfreq <- predict.lm(Model_linReg3, newdata=variables)
-
-#create the vector containing samples
-
-samples<-unique(targets$sample)[1:30]
-
-#just for the shimane viruses
-
-samples=samples[1:30]
-
-
-####
-
-masktargets<-(targets$predictedfreq>-20 & targets$decalage!=0 &
-targets$sample %in% samples )
-masktargets2<-(targets$predictedfreq>-5 & targets$decalage!=0  & 
-  targets$sample %in% samples)
-
-print(targets[masktargets,])
-print(targets[masktargets2,])
-#make a minidataframe with the selected regions and create a plot
-predictionscut<- targets[masktargets,]
-
-
-#change all predicted values that have a frequency not favorable by backtrack to -6
-
-masktargets3<-(predictionscut$pathway>2 | predictionscut$equilibrated==0 | predictionscut$neighbor>12 | predictionscut$neighborblock>9 | predictionscut$equilibrated<1 | predictionscut$pathwayb>7)
-
-masktargets4<-(predictionscut$pathway>2 | predictionscut$equilibrated<1 | predictionscut$pathwayb>7)
-
-masktargets5<-(predictionscut$equilibrated==0 | predictionscut$neighbor>12 | predictionscut$neighborblock>9)
-
-
-masktargets6<-(predictionscut$pathway>2 | predictionscut$equilibrated<1 | predictionscut$neighbor>12 | predictionscut$neighborblock>9 | predictionscut$pathwayb>7)
-
-
-
-#this creates the logaritmic scale
-
-predictionscut[masktargets6,]$predictedfreq=-15
-
-#save the vrna data for final representation
-
-predictionscutvrna = predictionscut
-
-ggplot(predictionscut, aes(y = predictedfreq, x = pos, color =insertion)) +
-facet_wrap(~sample, ncol = 2, scales = "free") + xlim(1012, 1030) + theme(panel.spacing = unit(0, 'points')) + theme(panel.border = element_rect(fill = "transparent", # Needed to add the border
-                                    color = "black", linewidth = 1)) +
-  geom_hline(yintercept = -5, col = "brown", linetype = "dashed", size=0.7) + theme_tufte() + theme(axis.line=element_line(), strip.text = element_text(size=11, family = "Arial"),axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) + scale_x_continuous(limits=c(1010,1030), breaks = predictionscut$pos) + scale_y_continuous(limits=c(-5.5, -1)) + geom_segment(aes(   x = predictionscut$pos, 
-                   xend = predictionscut$pos, 
-                      y = -5, 
-                   yend = predictionscut$predictedfreq),
-                   size = 10, 
-                   alpha = 0.6,
-                   color= "cyan4",
-               show_guide=F) + geom_text(aes(x=pos, y= -5.5, label=template), color="violetred" ,show.legend = FALSE) +
-   annotate("text", x = c(1026), y =-1.5, label = c("HA1  HA2") , color="violetred",size=3 , angle=0, fontface="bold") +
-  geom_vline(xintercept = 1026, col = "gray", linetype = "dashed", size=0.7) + geom_label_repel(aes(label=insertion,
-    color = insertion) ,show.legend = FALSE, size=3.5, check_overlap = TRUE, fontface="bold", max.overlaps = 50, force = 0.002, force_pull = 4)
-
-
-
-#################"plot of re-mapped data
-
-
-ggplot(predictionscut, aes(y = predictedfreq, x = falsepos, color =insertion)) +
-facet_wrap(~sample, ncol = 2, scales = "free") + xlim(1012, 1030) + theme(panel.spacing = unit(0, 'points')) + theme(panel.border = element_rect(fill = "transparent", # Needed to add the border
-                                    color = "black", linewidth = 1)) +
-  geom_hline(yintercept = -5, col = "brown", linetype = "dashed", size=0.7) + theme_tufte() + theme(axis.line=element_line(), strip.text = element_text(size=11, family = "Arial"),axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)) + scale_x_continuous(limits=c(1010,1030), breaks = predictionscut$pos) + scale_y_continuous(limits=c(-5.5, -1)) + geom_segment(aes(   x = predictionscut$falsepos, 
-                   xend = predictionscut$falsepos, 
-                      y = -5, 
-                   yend = predictionscut$predictedfreq),
-                   size = 10, 
-                   alpha = 0.6,
-                   color= "cyan4",
-               show_guide=F) + geom_text(aes(x=pos, y= -5.5, label=template), color="violetred" ,show.legend = FALSE) +
-   annotate("text", x = c(1026), y =-1.5, label = c("HA1  HA2") , color="violetred",size=3 , angle=0, fontface="bold") +
-  geom_vline(xintercept = 1026, col = "gray", linetype = "dashed", size=0.7) + geom_label_repel(aes(x=falsepos, label=insertion,
-    color = insertion) ,show.legend = FALSE, size=3.5, check_overlap = TRUE, fontface="bold", max.overlaps = 50, force = 0.002, force_pull = 4)
-```
-
-
-
-
-
-
-
-```{r}
-#create the analysis regarding model AIC, BIC
-
-broom::glance(Model_linReg)
-
-broom::glance(Model_linReg2)
-
-broom::glance(Model_linReg3)
-
-broom::glance(Model_linReg3.1)
-
-#broom::glance(Model_linReg3)
-
-
-```
-
-```{r}
-
-#create correlation figure of all observed insertions in all the viruses vs all the predictions 
-
-#create the new joined dataframes using position, sample and size as grouping variables
-
-
-
-
-
-
 
 ```
