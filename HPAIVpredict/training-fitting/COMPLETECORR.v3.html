@@ -412,14 +412,24 @@ mergedfullmean&lt;-(aggregate(logfreq ~ Realpos + sample2 + decalage + adenine +
 # limit the neighbor variable for short insettionsr</code></pre>
 <pre class="r"><code>#create first model to verify data integrity
 
-#remove noisi data from shimA3
+#Exclude ShimA3 AA and AAA insertion events because their orientation cannot be
+#assigned unambiguously to vRNA or cRNA synthesis. These observations are therefore
+#not suitable for a model that links insertion frequency to orientation-specific
+#product-template duplex parameters.
 
 
 mergedfullmean&lt;-mergedfullmean[mergedfullmean$sample2!=&quot;ShimA3&quot; | (mergedfullmean$insertion.y!=&quot;AA&quot; &amp; mergedfullmean$insertion.y!=&quot;AAA&quot;),]
 
 
-#add the false positive data from PR8 viruses
-
+# PR8-C6A low-frequency constraints.
+# These insertion classes correspond to strongly penalized product-template
+# configurations predicted by DDG and match/mismatch status. They were included
+# to constrain the low-frequency end of the model, where such events are expected
+# to occur below or close to the reliable detection range.
+#
+# The values represent conservative low-frequency estimates rather than independent
+# biological replicates; they are repeated three times to give appropriate weight
+# to this experimentally informative constraint during model fitting.
 
 
 
@@ -447,6 +457,14 @@ mergedfullmean$order1 &lt;- relevel(mergedfullmean$order1, ref = &quot;A&quot;)
 mergedfullmean$matchmismatch&lt;-factor(
   mergedfullmean$matchmismatch,
   levels =unique(mergedfullmean$matchmismatch))
+
+# Restrict model training to insertion frequencies above the reliable
+# quantification threshold. At lower frequencies, the finite sequencing depth
+# causes substantial sampling variability, preventing robust estimation of the
+# underlying insertion-frequency distribution.
+#
+# The model is therefore calibrated on reproducibly quantifiable insertion events,
+# rather than on rare observations dominated by stochastic sampling noise.
 
 
 
