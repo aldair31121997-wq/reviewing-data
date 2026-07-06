@@ -16,7 +16,7 @@ Then run:
 python3 slidingfold.py -t allviruses.fasta
 ```
 
-This command generates a TSV file containing the predicted transient RNA structures that may occur during HA replication at each analysed position. The analyses were performed using the version of `slidingfold.py` available in the github repository.
+This command generates a TSV file containing the predicted transient RNA structures that may occur during HA replication at each analysed position. The analyses were performed using the version of `slidingfold.py` available in the github repository (v1.0).
 
 ## Stationary RNA structures
 
