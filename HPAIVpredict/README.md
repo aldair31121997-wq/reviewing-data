@@ -20,7 +20,7 @@ The script `inserpredictor.py` script was tested on Python 3.7 but should be fin
 * [statsmodels](https://www.statsmodels.org/stable/api.html) (version 0.14.6)
 * [Biopython module Bio.Seq](https://biopython.org/docs/1.75/api/Bio.Seq.html) (version 1.74)
 
-an updated requirements file is aviable at requirements/requirements.txt, to use it run 
+An updated requirements file is available at requirements/requirements.txt. To use it, run: 
 
 ```
 pip install -r requirements/requirements.txt
