@@ -6,10 +6,10 @@ The SSCS analysis pipeline is written in bash, on linux OS (ubuntu):
 * [bwa](https://github.com/lh3/bwa) illumina sequence alignment (version 0.7.17)
 * [samtools](https://github.com/samtools/samtools) manipulation of sam files (version 1.19)
 * [cutadapt](https://github.com/marcelm/cutadapt) removal of adapter sequences (version 5.15.0)
-* [python](https://www.python.org/downloads) (version 2.7.18)
+* [python](https://www.python.org/downloads) (version 2.7.18).
 
 
-the DSPipeline2 tools and Consensusmaker.py come from https://github.com/Kennedy-Lab-UW/Duplex-Seq-Pipeline here we decided to re-upload the whole package as we modified key components of the original pipeline to get the insertion list, we keept the original licence advise coming from kennedylab.
+The DSPipeline2 tools and Consensusmaker.py originate from the Duplex-Seq-Pipeline developed by the Kennedy Lab: https://github.com/Kennedy-Lab-UW/Duplex-Seq-Pipeline. Here we decided to re-upload the whole package. Since we modified key components of the original pipeline to get the insertion list, we have retained the original licence advise coming from kennedylab.
 
 
 
