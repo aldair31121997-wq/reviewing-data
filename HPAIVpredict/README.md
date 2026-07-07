@@ -45,7 +45,7 @@ pip install -r requirements/requirements.txt
 
 ## 1st step: Get backtrack scores
 
-The sequence used for the prediction must be available in `fasta`. It is recommended that only small regions of a given RNA sequence are predicted since the algorithm grows exponentially with the sequence length and the number of sequences to predict. The step is performed using:
+The sequence used for the prediction must be available in `fasta` format. It is recommended that only small regions of a given RNA sequence are predicted since the algorithm grows exponentially with the sequence length and the number of sequences to predict. The step is performed using:
 
 ```
 inserpredictor.py PATH_TO_SEQUENCE_FILE.fasta start stop correction
@@ -68,16 +68,16 @@ python3 inserpredictor.py data/allviruses.fasta 26 85 986
 
 **WHERE TO FIND allviruses.fasta**
 
-the HA partial sequences used on this study, can be found at the data/ folder under the name allviruses.fasta
+The HA partial sequences used in this study can be found in the data/ folder under the name allviruses.fasta
 
 **Value**:
 
-The script creates two files (`crnaDDG.xlsx` and `vrnaDDG.xlsx`). The first corresponds to the backtrack positions during vRNA syntesis (with cRNA as the template), while the second corresponds to the backtrack positions during cRNA syntesis (with vRNA as the template).
+The script creates two files (`crnaDDG.xlsx` and `vrnaDDG.xlsx`). The first file corresponds to the backtrack positions during vRNA syntesis (with cRNA as the template), while the second file contains the backtrack positions during cRNA syntesis (with vRNA as the template).
 
 
 ## 2nd step: Get prediction frequencies and scores
 
-We recommend to use [RStudio](https://posit.co/products/open-source/rstudio) to run the file `visualizator.Rmd`, the only thing you need to modify are the following lines:
+We recommend to use [RStudio](https://posit.co/products/open-source/rstudio) to run the file `visualizator.Rmd`. The only thing you need to modify in the file are the following lines:
 
 ```
 predictionH5 <- "PATH_TO_crnaDDG.xlsx"
