@@ -12,14 +12,13 @@ The SSCS analysis pipeline is written in bash, on linux OS (ubuntu):
 The DSPipeline2 tools and Consensusmaker.py originate from the Duplex-Seq-Pipeline developed by the Kennedy Lab: https://github.com/Kennedy-Lab-UW/Duplex-Seq-Pipeline. Here we decided to re-upload the whole package. Since we modified key components of the original pipeline to get the insertion list, we have retained the original licence advise coming from kennedylab.
 
 
-
 # SSCS library Analysis.
-Asuming you implemented your library construction as described in material and methods, you should have now a paired end R1 and R2 couple of fastq files that come from your experimental infections. For this analysis you require 3 things:
-- a reference sequence (corresponding to the parent virus of your clonal experiment),
-- the DuplexSequencing folder and
-- the software described in ##dependencies## installed in your work machine (a cluster or any other high resource machine)
+Asuming you implemented your library construction as described in material and methods, you should have now a paired end R1 and R2 couple of fastq files generated from your experimental infections. To run the analysis, you will need:
+- a reference genome sequence (fasta format) corresponding to the parental virus used in your clonal experiment;
+- the DuplexSequencing folder;
+- all software listed under **Dependencies** installed on your computational platform (e.g., a computing cluster or any other high-performance machine).
 
-1) first step is to download this repository, inside you should have 4 total dir, Duplex-sequencing/, Unifiedworkflow/, references/, rawdata/.
+1) The first step is to download this repository, inside you should have 4 total dir, Duplex-sequencing/, Unifiedworkflow/, references/, rawdata/.
 
 
 2) you will put your fastq paired end files in your rawdata/ directory, it is important to DO NOT clean the sequences in this step, the pipeline has a cleaning step integrated and you need your full length reads for SSCS construction, to get the example data
