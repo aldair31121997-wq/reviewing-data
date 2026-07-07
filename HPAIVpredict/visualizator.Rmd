@@ -19,12 +19,15 @@ library(bioseq)
 library(stringi)
 library(writexl)
 library(ggpubr)
-setwd("D:/rnarep") # here you need to add your working dir
+
+#use this line to set your work directory
+setwd("YOUR-WORK-DIR") # here you need to add your working dir
 
 
 
-predictionH5<-read_excel("predictiontest.xlsx")
-predictionH5crna<-read_excel("predictioncrnatest.xlsx")
+predictionH5<-read_excel("crnaDDG.xlsx")
+predictionH5crna<-read_excel("vrnaDDG.xlsx")
+
 
 
 #positions are not properly posed
