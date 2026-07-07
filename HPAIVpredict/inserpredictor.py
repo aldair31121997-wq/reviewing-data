@@ -77,10 +77,10 @@ prediction, predictioncrna = INSER.rawpredictor(references, args.value1, args.va
 prediction=INSER.pathway(prediction)
 predictioncrna=INSER.pathway(predictioncrna)
 #to save modifications in excel table
-prediction.to_excel("predictiontest.xlsx")
-predictioncrna.to_excel("predictioncrnatest.xlsx")
+prediction.to_excel("crnaDDG.xlsx")
+predictioncrna.to_excel("vrnaDDG.xlsx")
 
-print("DDG calculation finish, excel names are predictiontest and predictioncrnatest.xlsx, please refer to R script for prediction and visualization")
+print("DDG calculation finish, excel names are crnaDDG.xlsx and vrnaDDG.xlsx, please refer to R script for prediction and visualization")
 
 
 ###defaults for this part 
