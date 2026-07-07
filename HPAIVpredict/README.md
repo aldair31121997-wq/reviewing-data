@@ -15,8 +15,8 @@ To run `HPAIVpredict`, please ensure that the following dependencies are satisfi
 The script `inserpredictor.py` script was tested on Python 3.7 but should be fine with more recent versions of Python.
 
 * [ViennaRNA](https://pypi.org/project/ViennaRNA/) (version 2.7.2)
-* [pandas](https://pandas.pydata.org/) (version 3.1.0)
-* [numpy](https://numpy.org/) (version 2.4.0)
+* [pandas](https://pandas.pydata.org/) (version 3.0.3)
+* [numpy](https://numpy.org/) (version 2.4.4)
 * [statsmodels](https://www.statsmodels.org/stable/api.html) (version 0.14.6)
 * [Biopython module Bio.Seq](https://biopython.org/docs/1.75/api/Bio.Seq.html) (version 1.74)
 
