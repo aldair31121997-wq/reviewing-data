@@ -2,8 +2,8 @@
 
 `HPAIVpredict` is designed to predict the aquisition of insertions in a given influenza H5/H7 RNA sequence, according to our slippage model. Two steps are required:
 
-* the first is the calculation of backtrack DG values of each position (using a python script);
-* the second is the use of a multivariate regresion model on the first step results, to obtain insertions that are likely to occur and an associated graphical representation.
+* the first step is the calculation of backtrack DG values of each position (using a python script);
+* the second step is the use of a multivariate regresion model on the first step results, to obtain insertions that are likely to occur and an associated graphical representation.
 
 
 ## Dependencies
