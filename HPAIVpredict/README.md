@@ -18,7 +18,7 @@ The script `inserpredictor.py` script was tested on Python 3.7 but should be fin
 * [pandas](https://pandas.pydata.org/) (version 3.1.0)
 * [numpy](https://numpy.org/) (version 2.4.0)
 * [statsmodels](https://www.statsmodels.org/stable/api.html) (version 0.14.6)
-* [Bio.Seq](https://biopython.org/docs/1.75/api/Bio.Seq.html) (version 1.74)
+* [Biopython module Bio.Seq](https://biopython.org/docs/1.75/api/Bio.Seq.html) (version 1.74)
 
 
 ### R packages
@@ -33,6 +33,7 @@ The script `inserpredictor.py` script was tested on Python 3.7 but should be fin
 * [stringi](https://cran.r-project.org/web/packages/stringi/index.html) (version 1.8.7)
 * [writexl](https://cran.r-project.org/web/packages/writexl/index.html) (version 1.5.4)
 * [ggpubr](https://cran.r-project.org/web/packages/ggpubr/index.html) (version 0.6.3)
+* [rstudio](https://docs.posit.co/ide/user/) (version 2023.12.1.402)
 
 
 ## 1st step: Get backtrack scores
