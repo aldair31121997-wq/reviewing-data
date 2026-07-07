@@ -14,7 +14,10 @@ The DSPipeline2 tools and Consensusmaker.py originate from the Duplex-Seq-Pipeli
 
 
 # SSCS library Analysis.
-Asuming you implemented your library construction as described in material and methods, you should have now a paired end R1 and R2 couple of fastq files that come from your experimental infections, for this analysis you require 3 things, a reference sequence (corresponding to the parent virus of your clonal experiment), the DuplexSequencing folder and the #dependencies1 installed in your work machine (a cluster or any other high resource machine)
+Asuming you implemented your library construction as described in material and methods, you should have now a paired end R1 and R2 couple of fastq files that come from your experimental infections. For this analysis you require 3 things:
+- a reference sequence (corresponding to the parent virus of your clonal experiment),
+- the DuplexSequencing folder and
+- the software described in ##dependencies## installed in your work machine (a cluster or any other high resource machine)
 
 1) first step is to download this repository, inside you should have 4 total dir, Duplex-sequencing/, Unifiedworkflow/, references/, rawdata/.
 
