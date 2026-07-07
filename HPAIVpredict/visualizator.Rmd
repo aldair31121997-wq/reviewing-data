@@ -19,7 +19,7 @@ library(bioseq)
 library(stringi)
 library(writexl)
 library(ggpubr)
-setwd("D:/rnarep") # here you need to add your working dir
+setwd("YOUR WORK DIRECTORY GOES HERE") # here you need to add your working dir
 
 
 
