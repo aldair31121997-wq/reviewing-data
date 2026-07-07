@@ -1,1 +1,10 @@
+# HPAIVpredict Python dependencies
+# Recommended interpreter: Python 3.11–3.13
+# Install with: python -m pip install -r requirements.txt
 
+ViennaRNA==2.7.2
+numpy==2.4.4
+pandas==3.0.3
+statsmodels==0.14.6
+biopython==1.87
+openpyxl==3.1.5
