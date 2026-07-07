@@ -59,7 +59,7 @@ with:
 **Example**:
 
 ```
-python3 inserpredictor.py data/allviruses.fasta 26 85 986
+python3 inserpredictor.py data/allviruses.fasta 26 90 986
 ```
 
 **WHERE TO FIND allviruses.fasta**
@@ -75,6 +75,7 @@ The script creates two files (`crnaDDG.xlsx` and `vrnaDDG.xlsx`). The first file
 We recommend to use [RStudio](https://posit.co/products/open-source/rstudio) to run the file `visualizator.Rmd`. The only lines that need to be modified are the following:
 
 ```
+setwd("YOUR WORK DIRECTORY") # here you need to add your working dir
 predictionH5 <- "PATH_TO_crnaDDG.xlsx"
 predictionH5crna <- "PATH_TO_vrnaDDG.xlsx"
 ```
