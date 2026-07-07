@@ -1,10 +1,9 @@
 # HPAIVpredict
 
-`HPAIVpredict` is designed to predict the aquisition of insertions in a given influenza H5/H7 RNA sequence, according to our slippage model. Two steps are required:
+`HPAIVpredict` is designed to predict the acquisition of insertions in a given influenza H5/H7 RNA sequence, according to our slippage model. Two steps are required:
 
-* the first step is the calculation of backtrack DG values of each position (using a python script);
+* the first step is the calculation of backtrack DG values of each position (using a Python script);
 * the second step is the use of a multivariate regression model on the first step results, to obtain insertions that are likely to occur and an associated graphical representation.
-
 
 ## Dependencies
 
@@ -20,13 +19,12 @@ The script `inserpredictor.py` was tested on Python 3.7 but should be fine with 
 * [statsmodels](https://www.statsmodels.org/stable/api.html) (version 0.14.6)
 * [Biopython module Bio.Seq](https://biopython.org/docs/1.75/api/Bio.Seq.html) (version 1.74)
 
-An updated requirements file is available at requirements/requirements.txt. To use it, run: 
+An updated requirements file is available at requirements/requirements.txt. To use it, run:
 
 ```
 pip install -r requirements/requirements.txt
 
 ```
-
 
 ### R packages
 
@@ -40,12 +38,11 @@ pip install -r requirements/requirements.txt
 * [stringi](https://cran.r-project.org/web/packages/stringi/index.html) (version 1.8.7)
 * [writexl](https://cran.r-project.org/web/packages/writexl/index.html) (version 1.5.4)
 * [ggpubr](https://cran.r-project.org/web/packages/ggpubr/index.html) (version 0.6.3)
-* [rstudio](https://docs.posit.co/ide/user/) (version 2023.12.1.402)
-
+* [RStudio](https://docs.posit.co/ide/user/) (version 2023.12.1.402)
 
 ## 1st step: Get backtrack scores
 
-The sequence used for the prediction must be available in `fasta` format. It is recommended that only small regions of a given RNA sequence are predicted since the algorithm grows exponentially with the sequence length and the number of sequences to predict. The step is performed using:
+The sequence used for the prediction must be available in `FASTA` format. It is recommended that only small regions of a given RNA sequence are predicted since the algorithm grows exponentially with the sequence length and the number of sequences to predict. The step is performed using:
 
 ```
 inserpredictor.py PATH_TO_SEQUENCE_FILE.fasta start stop correction
@@ -53,12 +50,11 @@ inserpredictor.py PATH_TO_SEQUENCE_FILE.fasta start stop correction
 
 with:
 
-| **argument** | **value** |
-| ------------ | --------- |
+| **argument** | **value**                                         |
+| ------------ | ------------------------------------------------- |
 | `start`      | sequence position at which to start the algorithm |
-| `stop`       | sequence position at which to stop the algorithm |
-| `correction` | new position assigned to the start position |
-
+| `stop`       | sequence position at which to stop the algorithm  |
+| `correction` | new position assigned to the start position       |
 
 **Example**:
 
@@ -72,8 +68,7 @@ The HA partial sequences used in this study can be found in the data/ folder und
 
 **Value**:
 
-The script creates two files (`crnaDDG.xlsx` and `vrnaDDG.xlsx`). The first file corresponds to the backtrack positions during vRNA syntesis (with cRNA as the template), while the second file contains the backtrack positions during cRNA syntesis (with vRNA as the template).
-
+The script creates two files (`crnaDDG.xlsx` and `vrnaDDG.xlsx`). The first file corresponds to the backtrack positions during vRNA synthesis (with cRNA as the template), while the second file contains the backtrack positions during cRNA synthesis (with vRNA as the template).
 
 ## 2nd step: Get prediction frequencies and scores
 
@@ -84,19 +79,17 @@ predictionH5 <- "PATH_TO_crnaDDG.xlsx"
 predictionH5crna <- "PATH_TO_vrnaDDG.xlsx"
 ```
 
-where these two files are those obtained in the first step. The script outputs a table in `xlsx` format containing all the analyzed positions and estimated likelihoods of insertions. When a given insertion has a prediction score higher than the detection threshold ($10^{-5}$), the prediction column contains its estimated $\log_{10}$-frequency unless the position is filtered by the `slippage accesibilty` rule. In cases where the prediction score is lower than the detection threshold or is filtered by the `slippage accesibilty` rule, the prediction column contains `BELOWtreshold`. 
+where these two files are those obtained in the first step. The script outputs a table in `xlsx` format containing all the analyzed positions and estimated likelihoods of insertions. When a given insertion has a prediction score higher than the detection threshold ($10^{-5}$), the prediction column contains its estimated $\log_{10}$-frequency unless the position is filtered by the `slippage accessibility` rule. In cases where the prediction score is lower than the detection threshold or is filtered by the `slippage accessibility` rule, the prediction column contains `BELOWthreshold`.
 
-In addition, the script creates the same type of plot than the plots shown in the article using a given window of visualization. this window corresponds to the positions in the HA 
-predicted and obseved (going from nucleotide position 1012 to 1030)
-
+In addition, the script creates the same type of plot than the plots shown in the article using a given window of visualization. This window corresponds to the positions in the HA
+predicted and observed (going from nucleotide position 1012 to 1030)
 
 ## Additional information on the model fitting
 
 Model training and fitting are available in the `training-fitting/` folder, which contains the R script used to generate the linear regression model, as well as the table containing the insertions and their corresponding ΔΔG, ΔG, and match/mismatch values used for training.
 
-
 # Note
 
 **TODO: add preprint citation**
 
-This version of `HPAIVpredict` (v 1.0.0) is the first to be published but not the last: A new version including substitution forecasting and furin-clevage scores is currently being developed. It will be released as a single user-friendly module and available via this repository send a mail to [aldair31121997@gmail.com](mailto:aldair3112
+This version of `HPAIVpredict` (v 1.0.0) is the first to be published but not the last: A new version including substitution forecasting and furin-cleavage scores is currently being developed. It will be released as a single user-friendly module and available via this repository send a mail to [aldair31121997@gmail.com](mailto:aldair31121997@gmail.com)
