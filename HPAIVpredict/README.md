@@ -92,8 +92,7 @@ predicted and obseved (going from nucleotide position 1012 to 1030)
 
 ## Additional information on the model fitting
 
-Model training and fitting are aviable at de model-details/ folder, wich contains the Rscript used to generate the linear regresion and the table containing 
-the insertions and corresponent DDG/DG match/mistmatch values used for training. 
+Model training and fitting are available in the `training-fitting/` folder, which contains the R script used to generate the linear regression model, as well as the table containing the insertions and their corresponding ΔΔG, ΔG, and match/mismatch values used for training.
 
 
 # Note
