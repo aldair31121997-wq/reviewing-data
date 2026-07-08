@@ -4,18 +4,12 @@ import numpy as np
 import statsmodels.api as sm
 from Bio.Seq import Seq
 
-
-
-
-#create a full function for vrna/crna analysis the entering variables are the dataframe containing the sequences/sample name
-# A containing the inferior limit of analysis  and b containing the superior limit of analysis here they are 1030 and 1100. C is the position corrector and depends on your sample, here i use the number 983
+# Function for vrna/crna analysis from the dataframe containing the sequences/sample name
+# 'a' sets the start position for the analysis and 'b' sets the stop position for the analysis (we used 1030 and 1100). 'c' sets the position corrector and depends on your sample (we used 983)
 
 def rawpredictor(references, a, b, c):
 
-
-
- # now get all the variables that will simulate the polimerase sliding trogh the RNA
- 
+ # now getting all the variables that describe the polimerase sliding trough the RNA
  templates=references["sample"].unique()
  sisterstrand="CCCCCCCCC"
  m=1
@@ -27,47 +21,34 @@ def rawpredictor(references, a, b, c):
  size=9
  size1=10
  size2=10
- #first iterative step read the list of templates sequence by sequence
+ # first iterative step reads the list of templates sequence by sequence
  for v in (range(len(templates))):
   line2="" 
   rnaseq = references["sequence"][v]
   rnaseq = rnaseq[a:b]
   rnaseq = rnaseq.replace('T', 'U')
-  #if you want the vRNA
+  # if you want the vRNA
   rnaseq2 = str(Seq(rnaseq).reverse_complement())
   rnaseq2 = rnaseq2.replace('T', 'U')
-  #to get the coñpleñetary strand of vRNA
+  # to get the complementry strand of vRNA
   rnaseqcomp = str(Seq(rnaseq).complement())
   rnaseqcomp2 = str(Seq(rnaseq2).complement())
   name = references["sample"][v]
-  #print(rnaseq)
-  #print(rnaseqcomp)
-  #print("longitud de secuencia",len(rnaseq))
-  #print(name)
- #sliding window seq
   swindow= 1
-#this variable is to define the two interacting sequences, the & tells the algorithm that we are comparing two
-#different sequences
+  # This variable is to define the two interacting sequences, the & tells the algorithm that we are comparing two different sequences
 
 ############################################################################################################
 
- #read the lenght of the RNA seq
-
+  #read the length of the RNA seq
   Length = len(rnaseq)
 
-#this is the start point of iteration, it will be defined at the begining 
+  #This is the start point of iteration
+  i = 1
 
-  i= 1
-
-
-#end replication bubble sequence and add 1, because sequence count starts at 0
-
+  # End the replication bubble sequence and add 1, because sequence count starts at 0
   End = int((Length - size) / swindow)
-  #print("the end is:", End)
  
-
-#start iteration between sequences to form structure
-
+  # Start iteration between sequences to form structure
   for i in range(9, End-9):
 
    decalage1=sisterstrand
@@ -134,20 +115,17 @@ def rawpredictor(references, a, b, c):
      else:
          structurep[h]="."
          structurep[18-h]="."
-    #print(decalagesplus["interna"][s])
-    #print(f"structuredec{s}p")
     structurep="".join(structurep)
     deltaGdecalp=RNA.eval_structure_simple(cataliticsitep+"&"+sisterstrand, structurep)
     decalagesplus.loc[s]= [structurep] + [deltaGdecalp]
-    #extract all data of predictions if the DeltaG is favorable.
-    #prediction= pd.DataFrame(columns=['cRNA', 'vRNA', 'imperectpair', 'decalage', 'deltaG', "pos", "insertion"])
+    # Extract all data of predictions if the DeltaG is favorable
     prediction.loc[infi]= [cataliticsite] + [sisterstrand[::-1]] + [cataliticsitep+"&"+sisterstrand] + [s] + [decalagesplus["DeltaG"][s]] + [i+c] + [cataliticsite[0:s]] + [name] + [(decalagesplus["DeltaG"][s] - perfectpair)] + [structurep]
     infi=infi+1
-   #get the deltaG of the perfect pairing for calculation of DDG
+    # Get the deltaG of the perfect pairing for calculation of DDG
     if s==0:
      perfectpair= deltaGdecalp
-#analsis of the cRNA syntesis, new version copresed the fist external FOR iterates over each posible decalage
-#the second INTERNAL FOR iterates over each nucleotide inside the catalitic site to determine the structure
+     # Analysis of the cRNA syntesis: The first external FOR iterates over each possible gap
+     # The second INTERNAL FOR iterates over each nucleotide inside the catalitic site to determine the structure
    perfectpair=0
    for l in range(size2):
     structurem= ["j","j","j","j","j","j","j","j","j","&","j","j","j","j","j","j","j","j","j"]
@@ -174,33 +152,25 @@ def rawpredictor(references, a, b, c):
      else:
          structurem[h]="."
          structurem[18-h]="."
-    #print(decalagesplus["interna"][s])
     structurem="".join(structurem)
     deltaGdecalm=RNA.eval_structure_simple(cataliticsitem+"&"+sisterstrand2, structurem)
-   #decalagesplus.loc[s]= [structurep] + [deltaGdecalp]
     cataliticsiteinv= cataliticsite2[::-1]
     vrnainser=cataliticsiteinv[0:l]
     line=line+"-"
-   #if(deltaGdecalm) < 1:
     predictioncrna.loc[infi2]= [cataliticsite] + [sisterstrand[::-1]] + [cataliticsitem+"&"+sisterstrand2] + [l+1] + [deltaGdecalm] + [i+(c-9)] + [str(Seq(cataliticsite2[0:l]).complement())] + [name] + [(deltaGdecalm - perfectpair)] + [structurem]
     infi2=infi2+1
     if l==0:
      perfectpair= deltaGdecalm
 #############################################################################33
    nucleotide= rnaseq[i+8]
-   #i = + swindow
    line2=line2+"-"
    m = m + 1
-#correct the decalage of CRNA
+ # correct the gap of CRNA
  predictioncrna["decalage"]=(predictioncrna["decalage"]-1)
     
  return(prediction, predictioncrna)
 
-
-
-
-###create a function for aditional treatment of thermodinamical pathways
-
+### Function for aditional treatment of thermodinamical pathways
 
 def pathway(prediction):
     
@@ -213,10 +183,8 @@ def pathway(prediction):
        prediction.loc[i,"neighbor"]= prediction["DDG"][i+1]
   if (prediction["decalage"][i] ==9):
        prediction.loc[i,"neighbor"]= prediction["DDG"][i-1]
-    
- #print(prediction.to_string())
 
- #create a new column for the neighbor variable direct block
+ # create a new column for the neighbor variable direct block
  prediction["neighborblock"]= 100.0
  prediction["equilibrated"]=1.0
  prediction["pathway"]=1.0
@@ -230,19 +198,16 @@ def pathway(prediction):
        prediction.loc[i,"neighborblock"]= prediction["DDG"][i]
   if (prediction["decalage"][i] ==9):
        prediction.loc[i,"neighborblock"]= prediction["DDG"][i-1]
-  #create a new variable to iterate over the neighborhod an search for previos stable states
+  # create a new variable to iterate over the neighborhood and search for previous stable states
   acumulation=1
   if (prediction["decalage"][i]>3):
   
    for j in range(prediction["decalage"][i]-1):
-        #print(i-(j+1))
-        #print(i)
         acumulation=acumulation*prediction["deltaG"][i-(j+1)]
-     #this line compares the new point with the old and registers the biggest one
+        # this line compares the new point with the old one and records the biggest
 
-        #print(prediction["sample"][i], prediction["pos"][i], prediction["insertion"][i], prediction["decalage"][i], prediction["equilibrated"][i])
         prediction.loc[i,"equilibrated"]=acumulation
-  #finally create the unmapping variable analysis
+       # finally create the unmapping variable analysis
 
 ###########################################################"""
   neighborc=1
@@ -250,42 +215,37 @@ def pathway(prediction):
   if (prediction["decalage"][i]>3):
   
    for j in range(prediction["decalage"][i]):
-     #this line compares the new point with the old and registers the biggest one
+        # this line compares the new point with the old one and records the biggest
         if (neighborc < prediction["deltaG"][i-(j+1)]):
          neighborc=(prediction["deltaG"][i-(j+1)]+0.1)
- #make the same but with DDG
+        # do the same but with DDG
         if (neighbord < prediction["DDG"][i-(j+1)]):
          neighbord=(prediction["DDG"][i-(j+1)]+0.1)
 
    prediction.loc[i,"pathway"] = neighborc+0.1
    prediction.loc[i,"pathwayb"] = neighbord+0.1
-        
- #create a new column with the sequence data
- prediction['template'] = prediction['insertion'].astype(str).str[0]   
 
- #finalize creating the data regarding the template and the pseudo mapping simmulation
-    
+ # create a new column with the sequence data
+ prediction['template'] = prediction['insertion'].astype(str).str[0]
+
+ # end for creating the data regarding the template and the pseudo mapping simmulation
  for i in range(len(prediction)):
-#  print(i)
   if (i<1):
       dummypos=prediction["pos"][i]
 
   if ((i > 1) & (prediction["template"][i]=="A") ):
     
-
     if ((prediction["template"][i-2]!="A") & (prediction["decalage"][i-2]!=0)):
          dummypos=prediction["pos"][i]
-        #print(dummypos)
     if ((prediction["template"][i-2]=="A") | (prediction["decalage"][i-2]==0)):
          prediction.loc[i,"falsepos"]=dummypos
-        #print("strech")
         
-#last add the match mismatch rules, with different categorical variables A, B, C, D,
+  # lastly, add the match mismatch rules, with different categorical variables A, B, C, D,
 
  prediction["matchmismatch"]= "NOVALUE"
  
  for i in range(len(prediction)-7):
-    #First case penality mismatches D
+      # first case: penality mismatches D
       if ((prediction["imperectpair"][i][0]=="A") & (prediction["imperectpair"][i][18]=="G")):
        prediction.loc[i,"matchmismatch"]="D"
       if ((prediction["imperectpair"][i][0]=="G") & (prediction["imperectpair"][i][18]=="A")):
@@ -296,8 +256,7 @@ def pathway(prediction):
        prediction.loc[i,"matchmismatch"]="D"
       if ((prediction["imperectpair"][i][0]=="A") & (prediction["imperectpair"][i][18]=="A")):
        prediction.loc[i,"matchmismatch"]="D"    
-    
-   #second case tolerated mismatches C-A, U-U, C-U VALUE B
+      # second case: tolerated mismatches C-A, U-U, C-U VALUE B
       if ((prediction["imperectpair"][i][0]=="C") & (prediction["imperectpair"][i][18]=="A")):
        prediction.loc[i,"matchmismatch"]="C"
       if ((prediction["imperectpair"][i][0]=="A") & (prediction["imperectpair"][i][18]=="C")):
@@ -308,7 +267,7 @@ def pathway(prediction):
        prediction.loc[i,"matchmismatch"]="C"
       if ((prediction["imperectpair"][i][0]=="U") & (prediction["imperectpair"][i][18]=="C")):
        prediction.loc[i,"matchmismatch"]="C"
-  #third case matches with no plus value A-U, G-C, 
+      # third case: matches with no plus value A-U, G-C,
       if ((prediction["imperectpair"][i][0]=="C") & (prediction["imperectpair"][i][18]=="G")):
        prediction.loc[i,"matchmismatch"]="B"
       if ((prediction["imperectpair"][i][0]=="G") & (prediction["imperectpair"][i][18]=="C")):
@@ -321,14 +280,11 @@ def pathway(prediction):
        prediction.loc[i,"matchmismatch"]="B"
       if ((prediction["imperectpair"][i][0]=="G") & (prediction["imperectpair"][i][18]=="U")):
        prediction.loc[i,"matchmismatch"]="B"
-  #fourt case create, adenine insertions inside a poli-A stretch 
+      # fourth case: create adenine insertions inside a poli-A stretch
       if ((prediction["insertion"][i]=="A") & (prediction["insertion"][i+3]=="AAAA") ):
        prediction.loc[i,"matchmismatch"]="A"
 
-  
-        
-  
  return(prediction)   
 
 
-#############analysis for window of 10 nt ########################################################################################
+############# analysis for window of 10 nt ########################################################################################
