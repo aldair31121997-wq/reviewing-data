@@ -1,36 +1,62 @@
-# Pipeline for processing of SSCS libraries.
-
+# Pipeline for processing SSCS libraries
 
 ## Dependencies
-The SSCS analysis pipeline is written in bash, on linux OS (ubuntu):
-* [bwa](https://github.com/lh3/bwa) illumina sequence alignment (version 0.7.17)
-* [samtools](https://github.com/samtools/samtools) manipulation of sam files (version 1.19)
-* [cutadapt](https://github.com/marcelm/cutadapt) removal of adapter sequences (version 5.15.0)
-* [python](https://www.python.org/downloads) (version 2.7.18).
 
+The SSCS analysis pipeline is written in Bash and was developed for Linux systems, specifically Ubuntu.
 
-The DSPipeline2 tools and Consensusmaker.py originate from the Duplex-Seq-Pipeline developed by the Kennedy Lab: https://github.com/Kennedy-Lab-UW/Duplex-Seq-Pipeline. Here we decided to re-upload the whole package. Since we modified key components of the original pipeline to get the insertion list, we have retained the original licence advise coming from kennedylab.
+The following software is required:
 
+* [bwa](https://github.com/lh3/bwa), for Illumina read alignment (version 0.7.17)
+* [samtools](https://github.com/samtools/samtools), for manipulation of SAM/BAM files (version 1.19)
+* [cutadapt](https://github.com/marcelm/cutadapt), for adapter trimming (version 5.1.0)
+* [Python](https://www.python.org/downloads) 3.7
 
-# SSCS library Analysis.
-Asuming you implemented your library construction as described in material and methods, you should have now a paired end R1 and R2 couple of fastq files generated from your experimental infections. To run the analysis, you will need:
-- a reference genome sequence (fasta format) corresponding to the parental virus used in your clonal experiment;
-- the DuplexSequencing folder;
-- all software listed under **Dependencies** installed on your computational platform (e.g., a computing cluster or any other high-performance machine).
+The `DSPipeline2` tools and `Consensusmaker.py` originate from the Duplex-Seq-Pipeline developed by the Kennedy Lab:
 
-1) The first step is to download this repository, inside you should have 4 total dir, Duplex-sequencing/, Unifiedworkflow/, references/, rawdata/.
+https://github.com/Kennedy-Lab-UW/Duplex-Seq-Pipeline
 
+In this repository, we re-uploaded the full package because key components of the original pipeline were modified to generate the insertion lists used in this study. We retained the original license notice from the Kennedy Lab pipeline.
 
-2) you will put your fastq paired end files in your rawdata/ directory, it is important to DO NOT clean the sequences in this step, the pipeline has a cleaning step integrated and you need your full length reads for SSCS construction, to get the example data
+## SSCS library analysis
+
+Assuming that the sequencing libraries were prepared as described in the Materials and Methods section of the manuscript, the starting point of this analysis should be paired-end FASTQ files generated from the experimental infections.
+
+To run the analysis, you will need:
+
+* a reference genome sequence in FASTA format corresponding to the parental virus used in the clonal experiment;
+* the `Duplex-sequencing/` folder;
+* all software listed under **Dependencies** installed on your computational platform, for example on a computing cluster or another high-performance machine.
+
+## Repository structure
+
+After downloading this repository, the `sequencing-analysis/` directory should contain the following folders:
+
+```
+Duplex-sequencing/
+references/
+rawdata/
+
+```
+
+2) you will put your fastq paired end files in your rawdata/ directory, it is important to DO NOT clean the sequences in this step, the pipeline has a cleaning step integrated and you need your full length reads for SSCS construction, to get the paper data
   get into the rawdata/ folder and run the following command:
 
 
 
 
 
-4) your reference sequences in fasta format go in references, the example folder provides all neded fasta files and indexed files required for the analysis of the example and paper data, however, IF YOU ADD NEW DATA WITH DIFFERENT VIRUSES THAN THE EXAMPLE AND THE PAPER you must add the fasta reference in this folder an run in place the file inside called index.sh
+4) your reference sequences in fasta format go in references, the example folder provides all neded fasta files to replicate the paper data analysis, get into the references dir and run in place the file called bwa_indexing_ref.sh, this command will index all the references for the subsequent analysis.
 
-5) now you modify the file automaticrun.tsv, this is a table with 4 columns separated by tab, the first one corresponds to the reference of
+```
+
+cd references
+
+sbatch bwa_indexing_ref.sh
+
+```
+ 
+
+8) now modify the file automaticrun.tsv, this is a table with 4 columns separated by tab, the first one corresponds to the reference of
 your sample, the second one is the sample name you want to attribute, I suggest you to format in the following manner:VIRUS-CELLTYPE-REPLICATE, the third collumn corresponds to the read1.fastq file name and location and finally the fourth column is the read2.fastq file name and location.
 
 
@@ -44,12 +70,28 @@ alignRef                              | Sample           | read1in           | r
 
 
 
-6) finally run the script automaticrun.sh, this script takes the information given in the automaticrun.tab table and launches the direct pipeline script, for each sample it will create all intermediate files in Sample/
-and finally it will create a table with all the data regarding insertions that will be stocked in Sample/*.mutpos
+6) finally run the script automaticrun.sh, this script takes the information given in the automaticrun.tab table and launches the direct pipeline script, for each sample it will create all intermediate files in `Sample/`
+and it will create a table with all the data regarding insertions that will be stocked in Sample/*.mutpos
 
-7) next step once all your samples are processed, is that you run the script treatment.sh, it will merge all the tables *mutpos and create a new column with the sample name that you provided
+7) next step once all your samples are processed, is that you run the script treatment.sh, it will merge all the tables *mutpos and create a new column with the sample name that you provided, the result will be outputed in the completedata.tab file 
+```
 
-8) take your table with all data, completedata.tab and run insertioncounter.py, this last step will give you a table that contains the following columns
+sbatch treatment.sh
+
+
+```
+
+
+8) take your table with all data completedata.tab and run insertioncounter.py using the table as argument;
+
+```
+
+python3 insertioncounter.py
+
+```
+
+
+9) this last step will give you a insertions.xlsx file that contains the following columns
 
 Sample  Cell  Rep
 
@@ -67,5 +109,12 @@ CAAAGAGAAAAAAAAGAGG
 however this sequence can be seen as a sequence with an insertion of AG in front of position 1014 or a sequence with an insertion of GA exactly in position 1016; for this reason you need the plot provided 
 by backtrack-prediction, this plot will tell you the position of insertions, you must verify manually if the sequence they create corresponds to the sequence reported by the insertions obseved, if thats the
 case you can re-map the position of the insertion. This step is intensive and probably will be automated in a future version of this repository, but for the moment you must do it manually.
+
+
+
+
+
+
+
 
 
