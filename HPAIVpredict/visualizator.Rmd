@@ -369,7 +369,7 @@ codoncrnaexport[codoncrnaexport$predictedfreqdec<10**-6]$predictedfreqdec<-"BELO
 
 write_xlsx(codonexport[order(codonexport$sample,codonexport$falsepos),], "predicted-crna-template.xlsx")
 
-write_xlsx(codonexport[order(codonexport$sample,codonexport$falsepos),], "predicted-vrna-template.xlsx")
+write_xlsx(codoncrnaexport[order(codoncrnaexport$sample,codoncrnaexport$falsepos),], "predicted-vrna-template.xlsx")
 
 
 ```
