@@ -17,7 +17,7 @@ The script `inserpredictor.py` was tested on Python 3.7 but should be fine with 
 * [pandas](https://pandas.pydata.org/) (version 3.0.3)
 * [numpy](https://numpy.org/) (version 2.4.4)
 * [statsmodels](https://www.statsmodels.org/stable/api.html) (version 0.14.6)
-* [Biopython module Bio.Seq](https://biopython.org/docs/1.75/api/Bio.Seq.html) (version 1.74)
+* [Biopython module Bio.Seq](https://biopython.org/docs/1.75/api/Bio.Seq.html) (version 1.87)
 
 An updated requirements file is available at requirements/requirements.txt. To use it, run:
 
