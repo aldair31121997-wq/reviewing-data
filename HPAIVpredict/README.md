@@ -92,6 +92,8 @@ Model training and fitting are available in the `training-fitting/` folder, whic
 
 # Note
 
-**TODO: add preprint citation**
+**Preprint citation pending**
 
-This version of `HPAIVpredict` (v 1.0.0) is the first to be published but not the last: A new version including substitution forecasting and furin-cleavage scores is currently being developed. It will be released as a single user-friendly module and available via this repository send a mail to [aldair31121997@gmail.com](mailto:aldair31121997@gmail.com)
+This version of `HPAIVpredict` (v1.0.0) is the first public release of the tool. Future versions are currently under development and will include substitution forecasting and furin-cleavage score integration. These updates will be released as a single, user-friendly module through this repository.
+
+For questions or updates, please contact [aldair31121997@gmail.com](mailto:aldair31121997@gmail.com).
