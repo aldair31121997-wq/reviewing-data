@@ -18,19 +18,28 @@ Asuming you implemented your library construction as described in material and m
 - the DuplexSequencing folder;
 - all software listed under **Dependencies** installed on your computational platform (e.g., a computing cluster or any other high-performance machine).
 
-1) The first step is to download this repository, inside you should have 4 total dir, Duplex-sequencing/, Unifiedworkflow/, references/, rawdata/.
+1) The first step is to download this repository, inside you should have 4 total dir, `Duplex-sequencing/`, `references/`, `rawdata/`.
 
 
-2) you will put your fastq paired end files in your rawdata/ directory, it is important to DO NOT clean the sequences in this step, the pipeline has a cleaning step integrated and you need your full length reads for SSCS construction, to get the example data
+2) you will put your fastq paired end files in your rawdata/ directory, it is important to DO NOT clean the sequences in this step, the pipeline has a cleaning step integrated and you need your full length reads for SSCS construction, to get the paper data
   get into the rawdata/ folder and run the following command:
 
 
 
 
 
-4) your reference sequences in fasta format go in references, the example folder provides all neded fasta files and indexed files required for the analysis of the example and paper data, however, IF YOU ADD NEW DATA WITH DIFFERENT VIRUSES THAN THE EXAMPLE AND THE PAPER you must add the fasta reference in this folder an run in place the file inside called index.sh
+4) your reference sequences in fasta format go in references, the example folder provides all neded fasta files to replicate the paper data analysis, get into the references dir and run in place the file called bwa_indexing_ref.sh, this command will index all the references for the subsequent analysis.
 
-5) now you modify the file automaticrun.tsv, this is a table with 4 columns separated by tab, the first one corresponds to the reference of
+```
+
+cd references
+
+sbatch bwa_indexing_ref.sh
+
+```
+ 
+
+8) now modify the file automaticrun.tsv, this is a table with 4 columns separated by tab, the first one corresponds to the reference of
 your sample, the second one is the sample name you want to attribute, I suggest you to format in the following manner:VIRUS-CELLTYPE-REPLICATE, the third collumn corresponds to the read1.fastq file name and location and finally the fourth column is the read2.fastq file name and location.
 
 
@@ -44,12 +53,28 @@ alignRef                              | Sample           | read1in           | r
 
 
 
-6) finally run the script automaticrun.sh, this script takes the information given in the automaticrun.tab table and launches the direct pipeline script, for each sample it will create all intermediate files in Sample/
-and finally it will create a table with all the data regarding insertions that will be stocked in Sample/*.mutpos
+6) finally run the script automaticrun.sh, this script takes the information given in the automaticrun.tab table and launches the direct pipeline script, for each sample it will create all intermediate files in `Sample/`
+and it will create a table with all the data regarding insertions that will be stocked in Sample/*.mutpos
 
-7) next step once all your samples are processed, is that you run the script treatment.sh, it will merge all the tables *mutpos and create a new column with the sample name that you provided
+7) next step once all your samples are processed, is that you run the script treatment.sh, it will merge all the tables *mutpos and create a new column with the sample name that you provided, the result will be outputed in the completedata.tab file 
+```
 
-8) take your table with all data, completedata.tab and run insertioncounter.py, this last step will give you a table that contains the following columns
+sbatch treatment.sh
+
+
+```
+
+
+8) take your table with all data completedata.tab and run insertioncounter.py using the table as argument;
+
+```
+
+python3 insertioncounter.py
+
+```
+
+
+9) this last step will give you a insertions.xlsx file that contains the following columns
 
 Sample  Cell  Rep
 
