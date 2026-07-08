@@ -23,7 +23,6 @@ An updated requirements file is available at requirements/requirements.txt. To u
 
 ```
 pip install -r requirements/requirements.txt
-
 ```
 
 ### R packages
@@ -72,7 +71,7 @@ The script creates two files (`crnaDDG.xlsx` and `vrnaDDG.xlsx`). The first file
 
 ## 2nd step: Get prediction frequencies and scores
 
-We recommend to use [RStudio](https://posit.co/products/open-source/rstudio) to run the file `visualizator.Rmd`. The only lines that need to be modified are the following:
+We recommend to use [RStudio](https://posit.co/products/open-source/rstudio) to knit the file `visualizator.Rmd`. The only lines that need to be modified are the following:
 
 ```
 setwd("YOUR WORK DIRECTORY") # here you need to add your working dir
