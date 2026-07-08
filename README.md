@@ -1,6 +1,6 @@
 # HA-insertion
 
-This github repository contains all the bioinformatic resources coming from the paper "Insertion-driven emergence of high pathogenicity avian influenza viruses is governed by product–template duplex thermodynamics".
+This github repository contains the bioinformatic resources required to reproduce the results of the preprint "Insertion-driven emergence of high pathogenicity avian influenza viruses is governed by product–template duplex thermodynamics".
 
 ## Reproducibility scope
 
