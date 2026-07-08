@@ -37,8 +37,8 @@ def rawpredictor(references, a, b, c):
   rnaseq2 = str(Seq(rnaseq).reverse_complement())
   rnaseq2 = rnaseq2.replace('T', 'U')
   #to get the coñpleñetary strand of vRNA
-  rnaseqcomp = str(Seq(rnaseq).complement())
-  rnaseqcomp2 = str(Seq(rnaseq2).complement())
+  rnaseqcomp = str(Seq(rnaseq).complement()).replace('T','U')
+  rnaseqcomp2 = str(Seq(rnaseq2).complement()).replace('T','U')
   name = references["sample"][v]
   #print(rnaseq)
   #print(rnaseqcomp)
