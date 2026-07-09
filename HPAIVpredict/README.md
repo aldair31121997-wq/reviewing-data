@@ -76,8 +76,8 @@ The script creates two files (`crnaDDG.xlsx` and `vrnaDDG.xlsx`). The first file
 We recommend to use [RStudio](https://posit.co/products/open-source/rstudio) to knit the file `visualizator.Rmd`. The only lines that need to be modified are the following:
 
 ```
-predictionH5 <- "PATH_TO_crnaDDG.xlsx"
-predictionH5crna <- "PATH_TO_vrnaDDG.xlsx"
+predictionH5 <- ("PATH_TO_crnaDDG.xlsx")
+predictionH5crna <- ("PATH_TO_vrnaDDG.xlsx")
 ```
 
 where these two files are those obtained in the first step and are assumed to be placed in the working directory of your RStudio session. The script outputs a table in `xlsx` format containing all the analyzed positions and estimated likelihoods of insertions. When a given insertion has a prediction score higher than the detection threshold ($10^{-5}$), the prediction column contains its estimated $\log_{10}$-frequency unless the position is filtered by the `slippage accessibility` rule. In cases where the prediction score is lower than the detection threshold or is filtered by the `slippage accessibility` rule, the prediction column contains `BELOWthreshold`.
