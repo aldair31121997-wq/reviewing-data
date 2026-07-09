@@ -133,7 +133,7 @@ completeinser2["FreqInser"]=completeinser2["maxrate"]/completeinser2["Depths"]
 
 
 #export to excel format for further analysis
-completeinser2.to_excel("insertions-v3.xlsx")
+completeinser2.to_excel("insertions.xlsx")
 
 
 # In[ ]:
