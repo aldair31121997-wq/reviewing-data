@@ -41,7 +41,41 @@ rawdata/
 2) you will put your fastq paired end files in your rawdata/ directory, it is important to DO NOT clean the sequences in this step, the pipeline has a cleaning step integrated and you need your full length reads for SSCS construction, to get the paper data
   get into the rawdata/ folder and run the following command:
 
+```
+# BioProject accession
+PRJ=PRJNA1481509
 
+# Install tools if needed
+sudo apt update
+sudo apt install -y sra-toolkit ncbi-entrez-direct
+
+# Get all SRA runs associated with the BioProject
+esearch -db sra -query "${PRJ}[BioProject]" | \
+  efetch -format runinfo > SraRunInfo_${PRJ}.csv
+
+# Extract SRR accessions
+cut -d',' -f1 SraRunInfo_${PRJ}.csv | grep '^SRR' > SraAccList_${PRJ}.txt
+
+# Download SRA files and convert to paired-end FASTQ
+mkdir -p sra fastq tmp
+
+prefetch \
+  --option-file SraAccList_${PRJ}.txt \
+  --max-size u \
+  -O sra
+
+while read SRR; do
+  fasterq-dump "$SRR" \
+    --split-files \
+    --threads 8 \
+    --outdir fastq \
+    --temp tmp
+done < SraAccList_${PRJ}.txt
+
+# Compress FASTQ files
+gzip -9 fastq/*.fastq
+
+```
 
 
 
