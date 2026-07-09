@@ -111,6 +111,11 @@ alignRef                              | Sample           | read1in           | r
 and it will create a table with all the data regarding insertions that will be stocked in Sample/*.mutpos
 
 ```
+##before launching adapt this line to the number of samples you analize (lines in your table), for example for 4 samples
+
+#SBATCH --array=1-4
+
+#launch
 
 sbatch automaticrun.sh
 
