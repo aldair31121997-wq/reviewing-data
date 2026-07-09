@@ -364,8 +364,8 @@ codoncrna$insertion <- sub("^[0-9]+", "", codoncrna$insertion)
 # export data to xlsx format
 codonexport <- codon
 codoncrnaexport <- codoncrna
-codonexport[codonexport$predictedfreqdec < 10**-6]$predictedfreqdec <- "BELOWthreshold"
-codoncrnaexport[codoncrnaexport$predictedfreqdec < 10**-6]$predictedfreqdec <- "BELOWthreshold"
+codonexport[codonexport$predictedfreqdec < 10**-6,]$predictedfreqdec <- "BELOWthreshold"
+codoncrnaexport[codoncrnaexport$predictedfreqdec < 10**-6,]$predictedfreqdec <- "BELOWthreshold"
 
 write_xlsx(codonexport[order(codonexport$sample,codonexport$falsepos), ], 
            "predicted-crna-template.xlsx")
