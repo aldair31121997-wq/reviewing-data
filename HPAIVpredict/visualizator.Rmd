@@ -382,6 +382,14 @@ windowsFonts(Arial = windowsFont("Arial"))
 codon[codon$sample == "2008-H7N7-8A" & codon$falsepos == "1017" &
         codon$predictedfreqdec > 10**-6,]$falsepos <- 1013
 
+#mapp the insertion of 6A from 1979 
+
+codon[codon$sample == "1979-H7N7-6A" & codon$falsepos == "1019" &
+        codon$predictedfreqdec > 10**-6,]$falsepos <- 1013
+
+codon[codon$sample == "1979-H7N7-6A" &
+        codon$falsepos == "1019",]$template <- "G"
+
 plotvrna <- plotinsertions(codon, 1026, 1012, 1030)
 suppressWarnings(print(plotvrna))
 
@@ -407,6 +415,9 @@ codoncrna[codoncrna$sample == "2008-H7N7-5A" &
 
 codoncrna[codoncrna$sample == "2008-H7N7-5A" &
             codoncrna$falsepos == "1021", ]$template <- "G"
+
+codoncrna[codoncrna$sample == "1979-H7N7-6A" &
+            codoncrna$falsepos == "1019", ]$template <- "G"
 
 plotcrna <- plotinsertions(codoncrna, 1026, 1012, 1030)
 
