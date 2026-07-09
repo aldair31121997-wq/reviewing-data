@@ -9,7 +9,7 @@
 module purge
 module load bioinfo/bwa/0.7.17
 module load bioinfo/samtools/1.19
-
+module load bioinfo/picard-tools/3.4.0
 
 
 for i in *.fasta
@@ -20,7 +20,7 @@ do
  samtools faidx ${i}
 
 
- java -jar -Xmx4g /usr/local/bioinfo/src/picard-tools/picard-2.20.7/picard.jar CreateSequenceDictionary REFERENCE=${i}
+ java -jar -Xmx4g /usr/local/bioinfo/src/picard-tools/picard-2.20.7/picard.jar CreateSequenceDictionary -REFERENCE REFERENCE=${i}
 
 done
 
