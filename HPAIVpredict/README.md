@@ -11,7 +11,7 @@ To run `HPAIVpredict`, please ensure that the following dependencies are satisfi
 
 ## Python packages
 
-The script `inserpredictor.py` was tested on Python 3.7 but should be fine with more recent versions of Python.
+The script `inserpredictor.py` was tested on Python 3.7 and python 3.11 but should be fine with more recent versions of Python.
 
 * [ViennaRNA](https://pypi.org/project/ViennaRNA/) (version 2.7.2)
 * [pandas](https://pandas.pydata.org/) (version 3.0.3)
@@ -24,6 +24,8 @@ An updated requirements file is available at requirements/requirements.txt. To u
 ```
 pip install -r requirements/requirements.txt
 ```
+
+*IMPORTANT* the requirements file is adapted to python 3.11
 
 ### R packages
 
