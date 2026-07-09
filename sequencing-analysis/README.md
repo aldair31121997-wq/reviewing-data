@@ -110,7 +110,14 @@ alignRef                              | Sample           | read1in           | r
 6) finally run the script automaticrun.sh, this script takes the information given in the automaticrun.tab table and launches the direct pipeline script, for each sample it will create all intermediate files in `Sample/`
 and it will create a table with all the data regarding insertions that will be stocked in Sample/*.mutpos
 
-7) next step once all your samples are processed, is that you run the script treatment.sh, it will merge all the tables *mutpos and create a new column with the sample name that you provided, the result will be outputed in the completedata.tab file, while a copy of all the tables *mutpos will be present at mutposreportsA/ 
+```
+
+sbatch automaticrun.sh
+
+
+```
+
+8) next step once all your samples are processed, is that you run the script treatment.sh, it will merge all the tables *mutpos and create a new column with the sample name that you provided, the result will be outputed in the compilatedclean.tab file, while a copy of all the tables *mutpos will be present at mutposreportsA/ 
 ```
 
 sbatch treatment.sh
@@ -119,7 +126,7 @@ sbatch treatment.sh
 ```
 
 
-8) take your table completedata.tab and run insertioncounter.py;
+8) take your table compilatedclean.tab and run insertioncounter.py;
 
 ```
 
