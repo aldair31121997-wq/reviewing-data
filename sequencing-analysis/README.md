@@ -135,7 +135,7 @@ sbatch treatment.sh
 
 ```
 
-python3 insertioncounter.py
+python3 insertioncounter.py compilatedclean.tab
 
 ```
 
