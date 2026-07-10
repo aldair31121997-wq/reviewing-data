@@ -110,8 +110,8 @@ alignRef                              | Sample           | read1in           | r
 
 
 
-6) finally run the script automaticrun.sh, this script takes the information given in the automaticrun.tab table and launches the direct pipeline script, for each sample it will create all intermediate files in `Sample/`
-and it will create a table with all the data regarding insertions that will be stocked in Sample/*.mutpos
+6) finally run the script automaticrun.sh, this script takes the information given in the automaticrun.tab table and launches the direct pipeline script, for each sample it will create all intermediate files in `Sample/` (here Shim23a2b-MDCK-1)
+and it will create a table with all the data regarding insertions that will be stocked in Sample/*.mutpos (here : Shim23a2b-MDCK-1/*.mutpos)
 
 ```
 ##before launching adapt this line to the number of samples you analize (lines in your table), for example for 4 samples
