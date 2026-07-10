@@ -16,7 +16,7 @@ The `DSPipeline2` tools and `Consensusmaker.py` originate from the Duplex-Seq-Pi
 
 https://github.com/Kennedy-Lab-UW/Duplex-Seq-Pipeline
 
-In this repository, we re-uploaded the full package because key components of the original pipeline were modified to generate the insertion lists used in this study. We retained the original license notice from the Kennedy Lab pipeline.
+In this repository, we re-uploaded the full package because key components of the original pipeline were modified to generate the insertion lists used in this study. We retained the original license notice from the Kennedy Lab pipeline. all python packages derived from here are whriten in python 2.7
 
 ## SSCS library analysis
 
