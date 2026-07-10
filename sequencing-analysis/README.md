@@ -43,6 +43,7 @@ mutposreportsA/
   get into the rawdata/ folder and run the following command:
 
 *IMPORTANT* paper data has not been released yet
+*** NOTE CG *** : NE PAS DONNER CETTE PROCEDURE. UNE PROCEDURE QUI N'EST PAS LA TIENNE ET QUE TU NE MAINTIENS PAS PEUT TOUJOURS CHANGER. DONNER JUSTE L'ID DU PROJET ET LA LISTE DES FICHIERS A TELECHARGER.
 
 ```
 # BioProject accession
