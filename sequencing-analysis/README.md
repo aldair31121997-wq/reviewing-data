@@ -48,38 +48,11 @@ mutposreportsA/
 *** NOTE CG *** : NE PAS DONNER CETTE PROCEDURE. UNE PROCEDURE QUI N'EST PAS LA TIENNE ET QUE TU NE MAINTIENS PAS PEUT TOUJOURS CHANGER. DONNER JUSTE L'ID DU PROJET ET LA LISTE DES FICHIERS A TELECHARGER.
 
 ```
-# BioProject accession
+# BioProject accession NOT RELEASED YET
 PRJ=PRJNA1481509
 
-# Install tools if needed
-sudo apt update
-sudo apt install -y sra-toolkit ncbi-entrez-direct
-
-# Get all SRA runs associated with the BioProject
-esearch -db sra -query "${PRJ}[BioProject]" | \
-  efetch -format runinfo > SraRunInfo_${PRJ}.csv
-
-# Extract SRR accessions
-cut -d',' -f1 SraRunInfo_${PRJ}.csv | grep '^SRR' > SraAccList_${PRJ}.txt
-
-# Download SRA files and convert to paired-end FASTQ
-mkdir -p sra fastq tmp
-
-prefetch \
-  --option-file SraAccList_${PRJ}.txt \
-  --max-size u \
-  -O sra
-
-while read SRR; do
-  fasterq-dump "$SRR" \
-    --split-files \
-    --threads 8 \
-    --outdir fastq \
-    --temp tmp
-done < SraAccList_${PRJ}.txt
-
-# Compress FASTQ files
-gzip -9 fastq/*.fastq
+#Example data fastq files aviable via FILESENDER
+https://filesender.renater.fr/?s=download&token=ac6b07ab-9ad8-448c-a888-9089670daf42
 
 ```
 
