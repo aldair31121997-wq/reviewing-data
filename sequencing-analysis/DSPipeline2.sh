@@ -74,7 +74,7 @@ echo "Starting Run" | tee -a ${logFile}
 echo "UnifiedConsensusMaker runs"  | tee -a ${logFile}
 date | tee -a ${logFile}
 echo "" | tee -a ${logFile}
-python ~/Duplex-Sequencing/UnifiedConsensusMaker.py --input ${Sample}.unaligned.pe.bam --prefix $Sample --taglen $barcodeLength --spacerlen $spacerLength --minmem $minMem --maxmem $maxMem --tagstats --cutoff $cutOff --Ncutoff $NcutOff --write-sscs --rep_filt $repFilt
+python ../Duplex-Sequencing/UnifiedConsensusMaker.py --input ${Sample}.unaligned.pe.bam --prefix $Sample --taglen $barcodeLength --spacerlen $spacerLength --minmem $minMem --maxmem $maxMem --tagstats --cutoff $cutOff --Ncutoff $NcutOff --write-sscs --rep_filt $repFilt
 
 ### 3. avant enlever les infos supp au niveau de la 3ieme ligne "+chiffre" qui bloque cutadapt, renommer fichier *sscs.f.fq
 echo "Modifying SSCS fq file for cutadapt compatibility" | tee -a ${logFile}
@@ -122,11 +122,11 @@ samtools mpileup -B -A -d 500000 -f $alignRef ${Sample}.cleanedsscs1.sort.filt.r
 
 ### 9. Count the number of unique mutations present in the final DCS sequences and calculate their frequencies
 echo "Count the number of unique mutations" | tee -a ${logFile}
-cat ${Sample}.sscs1_final.bam.pileup | python ~/Duplex-Sequencing/Nat_Protocols_Version/CountMuts.py -d 100 -c 0 -C 0.99 -u > ${Sample}.sscs1_final.bam.pileup.countmuts
+cat ${Sample}.sscs1_final.bam.pileup | python ../Duplex-Sequencing/Nat_Protocols_Version/CountMuts.py -d 100 -c 0 -C 0.99 -u > ${Sample}.sscs1_final.bam.pileup.countmuts
 
 ### 10. locate the genomic position of each mutation
 echo "genomic location of each mutation" | tee -a ${logFile}
-python ~/Duplex-Sequencing/Nat_Protocols_Version/mut_pos_v2.py -i ${Sample}.sscs1_final.bam.pileup -o ${Sample}.sscs1_final.bam.pileup.mutpos -d 100 -C 0.99
+python ../Duplex-Sequencing/Nat_Protocols_Version/mut_pos_v2.py -i ${Sample}.sscs1_final.bam.pileup -o ${Sample}.sscs1_final.bam.pileup.mutpos -d 100 -C 0.99
 
 # Step 11: Finishing
 echo "Finishing with run.. " $Sample | tee -a ${logFile}
