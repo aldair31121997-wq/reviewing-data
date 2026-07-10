@@ -20,7 +20,7 @@ do
  samtools faidx ${i}
 
 
- java -jar -Xmx4g /usr/local/bioinfo/src/picard-tools/picard-2.20.7/picard.jar CreateSequenceDictionary -REFERENCE REFERENCE=${i}
+ java -jar -Xmx4g /usr/local/bioinfo/src/picard-tools/picard-2.20.7/picard.jar CreateSequenceDictionary REFERENCE=${i}
 
 done
 
