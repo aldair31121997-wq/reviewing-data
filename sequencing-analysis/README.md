@@ -9,7 +9,8 @@ The following software is required:
 * [bwa](https://github.com/lh3/bwa), for Illumina read alignment (version 0.7.17)
 * [samtools](https://github.com/samtools/samtools), for manipulation of SAM/BAM files (version 1.19)
 * [cutadapt](https://github.com/marcelm/cutadapt), for adapter trimming (version 5.1.0)
-* [Python](https://www.python.org/downloads) 3.7
+* [Python](https://www.python.org/downloads) version 2.7 is used in automaticrun.sh wile 3.7 can be used for the rest of the pipeline
+
 
 The `DSPipeline2` tools and `Consensusmaker.py` originate from the Duplex-Seq-Pipeline developed by the Kennedy Lab:
 
