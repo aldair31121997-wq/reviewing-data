@@ -40,13 +40,9 @@ mutposreportsA/
 
 ```
 
-2) you will put your fastq paired end files in your rawdata/ directory, it is important to DO NOT clean the sequences in this step, the pipeline has a cleaning step integrated and you need your full length reads for SSCS construction, to get the paper data
-  get into the rawdata/ folder and run the following command:
+2) you will put your fastq paired end files in your rawdata/ directory, it is important to DO NOT clean the sequences in this step, the pipeline has a cleaning step integrated and you need your full length reads for SSCS construction, to get the paper data we provide the currently non released SRA bioproject ID, a secondary filesender link is provided, where a dataset derived from a PA-HA-Shim24a2b infection in MDCK cells is aviable as example data
 
 *IMPORTANT* paper data has not been released yet
-
-
-*** NOTE CG *** : NE PAS DONNER CETTE PROCEDURE. UNE PROCEDURE QUI N'EST PAS LA TIENNE ET QUE TU NE MAINTIENS PAS PEUT TOUJOURS CHANGER. DONNER JUSTE L'ID DU PROJET ET LA LISTE DES FICHIERS A TELECHARGER.
 
 ```
 # BioProject accession NOT RELEASED YET
