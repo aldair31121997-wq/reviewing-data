@@ -117,7 +117,7 @@ python3 insertioncounter.py compilatedclean.tab
 9) this last step will give you a insertions.xlsx file that contains the following columns
 
 sample | Pos |  maxrate | insertion  |FreqInser   |Template    |  Depths  | rep | cell
----------------------------------------------------------------------------------------
+-------|-----|----------|------------|------------|------------|----------|-----|------
 
 the column `sample` contains the sample name, `Pos` contains a given position in the HA that is being analized, `maxrate` contains the total number of insertions detected at a given position, `insertion` contains the size and sequence of the insertion observed, `FreqInser` contains the total frequency of the observed insertion, obtained dividing the total number of insertions detected at a given position `maxrate` by the total sequencing depth of that position `Depths`, the column `rep` contains the number of replicate of the expermient, and finally `cell` contains the cell type where the experiment was performed. 
 
