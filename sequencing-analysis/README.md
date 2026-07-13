@@ -10,7 +10,7 @@ The following software is required:
 * [samtools](https://github.com/samtools/samtools), for manipulation of SAM/BAM files (version 1.19)
 * [cutadapt](https://github.com/marcelm/cutadapt), for adapter trimming (version 5.1.0)
 * [Python](https://www.python.org/downloads) version 2.7 is used in `automaticrun.sh`, while Python >=3.7 can be used for the rest of the pipeline
-* [Pysam](https://pysam.readthedocs.io/en/latest/api.html), directly available in Python 2.7 and required as a module in Python >=3.7
+* [Pysam](https://pysam.readthedocs.io/en/latest/api.html)
 
 The `DSPipeline2` tools and `Consensusmaker.py` originate from the Duplex-Seq-Pipeline developed by the Kennedy Lab:
 
