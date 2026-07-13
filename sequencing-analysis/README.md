@@ -25,7 +25,7 @@ Assuming that the sequencing libraries were prepared as described in the Materia
 To run the analysis, you will need:
 
 * a reference genome sequence in FASTA format corresponding to the parental virus used in the clonal experiment;
-* the `Duplex-sequencing/` folder;
+* the `Duplex-Sequencing/` folder;
 * all software listed under **Dependencies** installed on your computational platform, for example, on a computing cluster or another high-performance machine.
 
 ## Repository structure
@@ -33,7 +33,7 @@ To run the analysis, you will need:
 After downloading this repository, the `sequencing-analysis/` directory should contain the following folders:
 
 ```text
-Duplex-sequencing/
+Duplex-Sequencing/
 references/
 rawdata/
 mutposreportsA/
