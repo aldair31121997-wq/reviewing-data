@@ -6,14 +6,18 @@ type: software
 version: 1.0.0
 date-released: "2026-07-13"
 
-## Contributors
+authors:
 
-* **Aldair Martin Martínez Pineda** — conceptualization, software development, model development, data analysis, documentation, and repository maintenance.
-* **Gabriel Dupre** — software development and data analysis.
-* **Nathalie vialaneix** — software testing, debugging, and review of the repository documentation.
+* family-names: "Martinez Pineda"
+  given-names: "Aldair Martin"
 
+* family-names: "Dupre"
+  given-names: "Gabriel"
 
-abstract:
+* family-names: "Vialaneix"
+  given-names: "Nathalie"
+
+abstract: >-
 Bioinformatic resources developed to analyse and predict recurrent
 insertions at the HA cleavage site of influenza A viruses. The repository
 contains HPAIVpredict, the associated model-training resources, an SSCS
