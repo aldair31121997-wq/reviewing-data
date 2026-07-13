@@ -9,15 +9,14 @@ The following software is required:
 * [bwa](https://github.com/lh3/bwa), for Illumina read alignment (version 0.7.17)
 * [samtools](https://github.com/samtools/samtools), for manipulation of SAM/BAM files (version 1.19)
 * [cutadapt](https://github.com/marcelm/cutadapt), for adapter trimming (version 5.1.0)
-* [Python](https://www.python.org/downloads) version 2.7 is used in automaticrun.sh wile >=3.7 can be used for the rest of the pipeline
-* [Pysam](https://pysam.readthedocs.io/en/latest/api.html) directly aviable in python 2.7 and required as module in python >=3.7
-
+* [Python](https://www.python.org/downloads) version 2.7 is used in `automaticrun.sh`, while Python >=3.7 can be used for the rest of the pipeline
+* [Pysam](https://pysam.readthedocs.io/en/latest/api.html), directly available in Python 2.7 and required as a module in Python >=3.7
 
 The `DSPipeline2` tools and `Consensusmaker.py` originate from the Duplex-Seq-Pipeline developed by the Kennedy Lab:
 
 https://github.com/Kennedy-Lab-UW/Duplex-Seq-Pipeline
 
-In this repository, we re-uploaded the full package because key components of the original pipeline were modified to generate the insertion lists used in this study. We retained the original license notice from the Kennedy Lab pipeline. all python packages derived from here are whriten in python 2.7
+In this repository, we re-uploaded the full package because key components of the original pipeline were modified to generate the insertion lists used in this study. We retained the original license notice from the Kennedy Lab pipeline. All Python packages derived from this pipeline are written in Python 2.7.
 
 ## SSCS library analysis
 
@@ -27,119 +26,138 @@ To run the analysis, you will need:
 
 * a reference genome sequence in FASTA format corresponding to the parental virus used in the clonal experiment;
 * the `Duplex-sequencing/` folder;
-* all software listed under **Dependencies** installed on your computational platform, for example on a computing cluster or another high-performance machine.
+* all software listed under **Dependencies** installed on your computational platform, for example, on a computing cluster or another high-performance machine.
 
 ## Repository structure
 
 After downloading this repository, the `sequencing-analysis/` directory should contain the following folders:
 
-```
+```text
 Duplex-sequencing/
 references/
 rawdata/
 mutposreportsA/
-
 ```
 
-2) you will put your fastq paired end files in your rawdata/ directory, it is important to DO NOT clean the sequences in this step, the pipeline has a cleaning step integrated and you need your full length reads for SSCS construction, to get the paper data we provide the currently non released SRA bioproject ID, a secondary filesender link is provided, where a dataset derived from a PA-HA-Shim24a2b infection in MDCK cells is aviable as example data
+## Analysis workflow
 
-*IMPORTANT* paper data has not been released yet
+### 1. Add the paired-end FASTQ files
 
-```
-# BioProject accession NOT RELEASED YET
+Place your paired-end FASTQ files in the `rawdata/` directory.
+
+It is important not to clean the sequences at this step. The pipeline has an integrated cleaning step, and full-length reads are required for SSCS construction.
+
+To obtain the paper data, we provide the accession number of the currently unreleased SRA BioProject. A secondary FileSender link is also provided, where a dataset derived from a PA-HA-Shim24a2b infection in MDCK cells is available as example data.
+
+**IMPORTANT: The paper data have not yet been released.**
+
+```bash
+# BioProject accession — NOT RELEASED YET
 PRJ=PRJNA1481509
 
-#Example data fastq files aviable via FILESENDER
+# Example FASTQ files available via FileSender
 https://filesender.renater.fr/?s=download&token=ac6b07ab-9ad8-448c-a888-9089670daf42
-
 ```
 
+### 2. Index the reference sequences
 
+Place your reference sequences in FASTA format in the `references/` directory.
 
-4) your reference sequences in fasta format go in references, the example folder provides all neded fasta files to replicate the paper data analysis, get into the references dir and run in place the file called bwa_indexing_ref.sh, this command will index all the references for the subsequent analysis.
+The example folder provides all the FASTA files needed to replicate the paper data analysis. Navigate to the `references/` directory and run the file called `bwa_indexing_ref.sh`. This command will index all the references for the subsequent analysis.
 
-```
-
+```bash
 cd references
 
 sbatch bwa_indexing_ref.sh
-
 ```
- 
 
-8) now modify the file automaticrun.tsv, this is a table with 4 columns separated by tab, the first one corresponds to the reference of
-your sample, the second one is the sample name you want to attribute, I suggest you to format in the following manner:VIRUS-CELLTYPE-REPLICATE, the third collumn corresponds to the read1.fastq file name and location and finally the fourth column is the read2.fastq file name and location.
+### 3. Configure `automaticrun.tsv`
 
+Modify the `automaticrun.tsv` file.
 
+This is a table containing four tab-separated columns. The first column corresponds to the reference sequence for your sample. The second column corresponds to the sample name that you want to assign. We suggest formatting it in the following manner: `VIRUS-CELLTYPE-REPLICATE`. The third column corresponds to the name and location of the Read 1 FASTQ file. Finally, the fourth column corresponds to the name and location of the Read 2 FASTQ file.
 
+| alignRef                              | Sample           | read1in                              | read2in                              |
+| ------------------------------------- | ---------------- | ------------------------------------ | ------------------------------------ |
+| references/HA.full.ShimH5_24a2b.fasta | Shim23a2b-MDCK-1 | rawdata/Shim24a2b-MDCKR1_R1.fastq.gz | rawdata/Shim24a2b-MDCKR1_R2.fastq.gz |
 
-alignRef                              | Sample           | read1in           | read2in
---------------------------------- | -------------------- | ------------------- | ------------------
- references/HA.full.ShimH5_24a2b.fasta | Shim23a2b-MDCK-1 | rawdata/Shim24a2b-MDCKR1_R1.fastq.gz | rawdata/Shim24a2b-MDCKR1_R2.fastq.gz
+### 4. Run `automaticrun.sh`
 
+Run the `automaticrun.sh` script.
 
+This script takes the information provided in the `automaticrun.tsv` table and launches the pipeline directly. For each sample, it will create all intermediate files in `Sample/`, for example:
 
-
-
-6) finally run the script automaticrun.sh, this script takes the information given in the automaticrun.tab table and launches the direct pipeline script, for each sample it will create all intermediate files in `Sample/` (here Shim23a2b-MDCK-1)
-and it will create a table with all the data regarding insertions that will be stocked in Sample/*.mutpos (here : Shim23a2b-MDCK-1/*.mutpos)
-
+```text
+Shim23a2b-MDCK-1/
 ```
-##before launching adapt this line to the number of samples you analize (lines in your table), for example for 4 samples
 
+It will also create a table containing all the insertion data, which will be stored as a `.mutpos` file in the sample directory, for example:
+
+```text
+Shim23a2b-MDCK-1/*.mutpos
+```
+
+Before launching the analysis, adapt the following line to the number of samples being analysed, corresponding to the number of lines in your table. For example, for four samples:
+
+```bash
 #SBATCH --array=1-4
+```
 
-#launch
+Launch the analysis with:
 
+```bash
 sbatch automaticrun.sh
-
-
 ```
 
-8) next step once all your samples are processed, is that you run the script treatment.sh, it will merge all the tables *mutpos and create a new column with the sample name that you provided, the result will be outputed in the compilatedclean.tab file, while a copy of all the tables *mutpos will be present at mutposreportsA/ 
-```
+### 5. Run `treatment.sh`
 
+Once all your samples have been processed, run the `treatment.sh` script.
+
+This script will merge all the `.mutpos` tables and create a new column containing the sample name that you provided. The result will be written to the `compilatedclean.tab` file, while a copy of all the `.mutpos` tables will be placed in the `mutposreportsA/` directory.
+
+```bash
 sbatch treatment.sh
-
-
 ```
 
+### 6. Run `insertioncounter.py`
 
-8) take your table compilatedclean.tab and run insertioncounter.py;
+Use the `compilatedclean.tab` table as input for `insertioncounter.py`:
 
-```
-
+```bash
 python3 insertioncounter.py compilatedclean.tab
-
 ```
 
+### 7. Interpret and map the output
 
-9) this last step will give you a insertions.xlsx file that contains the following columns
+This final step will generate an `insertions.xlsx` file containing the following columns:
 
-sample | Pos |  maxrate | insertion  |FreqInser   |Template    |  Depths  | rep | cell
--------|-----|----------|------------|------------|------------|----------|-----|------
+| sample | Pos | maxrate | insertion | FreqInser | Template | Depths | rep | cell |
+| ------ | --- | ------- | --------- | --------- | -------- | ------ | --- | ---- |
 
-the column `sample` contains the sample name, `Pos` contains a given position in the HA that is being analized, `maxrate` contains the total number of insertions detected at a given position, `insertion` contains the size and sequence of the insertion observed, `FreqInser` contains the total frequency of the observed insertion, obtained dividing the total number of insertions detected at a given position `maxrate` by the total sequencing depth of that position `Depths`, the column `rep` contains the number of replicate of the expermient, and finally `cell` contains the cell type where the experiment was performed. 
+The `sample` column contains the sample name. `Pos` contains a given position in the HA sequence that is being analysed. `maxrate` contains the total number of insertions detected at a given position. `insertion` contains the size and sequence of the observed insertion.
 
-this dataset is ready for mapping and plotting; the mapping step refers to asign detected insertions to the real positions they emerge acording to our backtrack-model, currently this step is manual and you require the backtrack-prediction output to have the insertions and the real positions they correspond, I give you an example of how mapping works:
+`FreqInser` contains the total frequency of the observed insertion, obtained by dividing the total number of insertions detected at a given position, `maxrate`, by the total sequencing depth at that position, `Depths`. The `rep` column contains the replicate number of the experiment, and the `cell` column contains the cell type in which the experiment was performed.
 
-imagine the following sequence:
+This dataset is ready for mapping and plotting.
 
-CAAAGAAAAAAAAGAGG 
+The mapping step consists of assigning detected insertions to the actual positions from which they emerged according to our backtracking model. Currently, this step is performed manually and requires the backtracking-prediction output to identify the insertion sequences and the actual positions to which they correspond.
 
-if it aquires an insertion of "GA" product of backtrack that emerges in position 1016, this will create the following sequence:
+The following example illustrates how the mapping works.
 
+Consider the following sequence:
+
+```text
+CAAAGAAAAAAAAGAGG
+```
+
+If it acquires a `GA` insertion resulting from a backtracking event emerging at position 1016, it will produce the following sequence:
+
+```text
 CAAAGAGAAAAAAAAGAGG
+```
 
-however this sequence can be seen as a sequence with an insertion of AG in front of position 1014 or a sequence with an insertion of GA exactly in position 1016; for this reason you need the plot provided 
-by backtrack-prediction, this plot will tell you the position of insertions, you must verify manually if the sequence they create corresponds to the sequence reported by the insertions obseved, if thats the
-case you can re-map the position of the insertion. This step is intensive and probably will be automated in a future version of this repository, but for the moment you must do it manually.
+However, this sequence can be interpreted either as containing an `AG` insertion before position 1014 or as containing a `GA` insertion exactly at position 1016.
 
+For this reason, you need the plot provided by the backtracking prediction. This plot indicates the predicted insertion positions. You must manually verify whether the sequence generated by a predicted insertion corresponds to the observed insertion sequence. If this is the case, you can remap the position of the insertion accordingly.
 
-
-
-
-
-
-
-
+This step is labor-intensive and will probably be automated in a future version of this repository. For the moment, it must be performed manually.
