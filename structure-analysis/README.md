@@ -33,6 +33,7 @@ Each sequence corresponds to an 80-nt window analysed in this study. Folding pre
 1. Funk, M., Spronken, M. I., Hutchinson, R. M., Arragain, B., Juyoux, P., Bestebroer, T. M., de Bruin, A. C. M., Gultyaev, A. P., Fouchier, R. A. M., Cusack, S., te Velthuis, A. J. W., and Richard, M. (2026). *Polymerase trapping as the mechanism of H5 highly pathogenic avian influenza virus genesis*. **Science, 391**(6790), eadr6632. doi: 10.1126/science.adr6632.
 
 2. Lorenz, R., Bernhart, S. H., Höner zu Siederdissen, C., Tafer, H., Flamm, C., Stadler, P. F., and Hofacker, I. L. (2011). *ViennaRNA Package 2.0*. **Algorithms for Molecular Biology, 6**(1), 26. doi: 10.1186/1748-7188-6-26.
+3. French H, Pitré E, Oade MS, Elshina E, Bisht K, King A, Bauer DLV, Te Velthuis AJW. Transient RNA structures cause aberrant influenza virus replication and innate immune activation. Science Advances. 2022;8(36):eabp8655. doi:10.1126/sciadv.abp8655.
 
 
 
