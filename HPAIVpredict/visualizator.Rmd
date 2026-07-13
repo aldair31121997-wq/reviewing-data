@@ -378,7 +378,7 @@ write_xlsx(codoncrnaexport[order(codoncrnaexport$sample,codoncrnaexport$falsepos
 # Plots
 
 ```{r, fig.height=50, fig.width=12}
-windowsFonts(Arial = windowsFont("Arial"))
+#windowsFonts(Arial = windowsFont("Arial"))
 codon[codon$sample == "2008-H7N7-8A" & codon$falsepos == "1017" &
         codon$predictedfreqdec > 10**-6,]$falsepos <- 1013
 
