@@ -4,18 +4,18 @@ message: "If you use these resources, please cite this software release and the 
 title: "HA-insertion: bioinformatic resources for influenza virus insertion analysis"
 type: software
 version: 1.0.0
-date-released: "2026-07-13"
+date-released: 2026-07-13
 
 authors:
 
-- family-names: "Martinez Pineda"
-  given-names: "Aldair Martin"
+- family-names: Martinez Pineda
+  given-names: Aldair Martin
 
-- family-names: "Dupre"
-  given-names: "Gabriel"
+- family-names: Dupre
+  given-names: Gabriel
 
-- family-names: "Vialaneix"
-  given-names: "Nathalie"
+- family-names: Vialaneix
+  given-names: Nathalie
 
 abstract: >-
 Bioinformatic resources developed to analyse and predict recurrent
