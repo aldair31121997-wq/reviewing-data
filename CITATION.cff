@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use these resources, please cite this software release and the associated scientific article when available."
+
+title: "HA-insertion: bioinformatic resources for influenza virus insertion analysis"
+type: software
+version: 1.0.0
+date-released: "2026-07-13"
+
+## Contributors
+
+* **Aldair Martin Martínez Pineda** — conceptualization, software development, model development, data analysis, documentation, and repository maintenance.
+* **Gabriel Dupré** — software development and data analysis.
+* **Nathalie Vialanex** — software testing, debugging, and review of the repository documentation.
+
+
+abstract: >-
+Bioinformatic resources developed to analyse and predict recurrent
+insertions at the HA cleavage site of influenza A viruses. The repository
+contains HPAIVpredict, the associated model-training resources, an SSCS
+sequencing-analysis pipeline, and the sequences and instructions used for
+RNA structure analyses.
+
+repository-code: "https://github.com/aldair31121997-wq/reviewing-data"
+
+license: GPL-3.0-only
+
+keywords:
+
+* influenza A virus
+* highly pathogenic avian influenza
+* HPAIV
+* polymerase slippage
+* RNA-dependent RNA polymerase
+* product-template duplex
+* RNA thermodynamics
+* insertion prediction
+* HPAIVpredict
+* SSCS
