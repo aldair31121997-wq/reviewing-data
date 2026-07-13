@@ -45,7 +45,7 @@ mutposreportsA/
 
 Place your paired-end FASTQ files in the `rawdata/` directory.
 
-It is important not to clean the sequences at this step. The pipeline has an integrated cleaning step, and full-length reads are required for SSCS construction.
+It is important not to clean the sequences at this step. The pipeline has an integrated cleaning step, and untrimmed raw reads are required for SSCS construction.
 
 To obtain the paper data, we provide the accession number of the currently unreleased SRA BioProject. A secondary FileSender link is also provided, where a dataset derived from a PA-HA-Shim24a2b infection in MDCK cells is available as example data.
 
