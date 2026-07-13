@@ -8,13 +8,13 @@ date-released: "2026-07-13"
 
 authors:
 
-* family-names: "Martinez Pineda"
+- family-names: "Martinez Pineda"
   given-names: "Aldair Martin"
 
-* family-names: "Dupre"
+- family-names: "Dupre"
   given-names: "Gabriel"
 
-* family-names: "Vialaneix"
+- family-names: "Vialaneix"
   given-names: "Nathalie"
 
 abstract: >-
@@ -30,13 +30,13 @@ license: GPL-3.0-only
 
 keywords:
 
-* influenza A virus
-* highly pathogenic avian influenza
-* HPAIV
-* polymerase slippage
-* RNA-dependent RNA polymerase
-* product-template duplex
-* RNA thermodynamics
-* insertion prediction
-* HPAIVpredict
-* SSCS
+- influenza A virus
+- highly pathogenic avian influenza
+- HPAIV
+- polymerase slippage
+- RNA-dependent RNA polymerase
+- product-template duplex
+- RNA thermodynamics
+- insertion prediction
+- HPAIVpredict
+- SSCS
