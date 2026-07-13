@@ -88,13 +88,13 @@ Run the `automaticrun.sh` script.
 This script takes the information provided in the `automaticrun.tsv` table and launches the pipeline directly. For each sample, it will create all intermediate files in `Sample/`, for example:
 
 ```text
-Shim23a2b-MDCK-1/
+Shim24a2b-MDCK-1/
 ```
 
 It will also create a table containing all the insertion data, which will be stored as a `.mutpos` file in the sample directory, for example:
 
 ```text
-Shim23a2b-MDCK-1/*.mutpos
+Shim24a2b-MDCK-1/*.mutpos
 ```
 
 Before launching the analysis, adapt the following line to the number of samples being analysed, corresponding to the number of lines in your table. For example, for four samples:
