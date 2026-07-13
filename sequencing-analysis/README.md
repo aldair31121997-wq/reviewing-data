@@ -79,7 +79,7 @@ This is a table containing four tab-separated columns. The first column correspo
 
 | alignRef                              | Sample           | read1in                              | read2in                              |
 | ------------------------------------- | ---------------- | ------------------------------------ | ------------------------------------ |
-| references/HA.full.ShimH5_24a2b.fasta | Shim23a2b-MDCK-1 | rawdata/Shim24a2b-MDCKR1_R1.fastq.gz | rawdata/Shim24a2b-MDCKR1_R2.fastq.gz |
+| references/HA.full.ShimH5_24a2b.fasta | Shim24a2b-MDCK-1 | rawdata/Shim24a2b-MDCKR1_R1.fastq.gz | rawdata/Shim24a2b-MDCKR1_R2.fastq.gz |
 
 ### 4. Run `automaticrun.sh`
 
