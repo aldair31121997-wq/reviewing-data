@@ -1,2 +1,2 @@
 alignRef	Sample	read1in	read2in
-references/HA.full.ShimH5_24a2b.fasta	Shim24a2b	<ABSOLUTE_PATH_TO_READ1_FASTQ>	<ABSOLUTE_PATH_TO_READ2_FASTQ>
+references/HA.full.ShimH5_24a2b.fasta	Shim24a2b-MDCK-R1	<ABSOLUTE_PATH_TO_READ1_FASTQ>	<ABSOLUTE_PATH_TO_READ2_FASTQ>
