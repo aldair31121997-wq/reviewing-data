@@ -1,4 +1,4 @@
-# Detailed training and fitting of the model using R.
+# Detailed training and fitting of the model using R
 
 
 * `COMPLETECORR.v3.html` contains the training details in HTML format, including a plot of the insertions used to train the model and a comparison between predicted and observed insertion frequencies.
