@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use these resources, please cite this software release and the associated scientific article when available."
 
-title: "HA-insertion: bioinformatic resources for influenza virus insertion analysis"
+title: "HA-insertion: bioinformatic resources for influenza virus insertion-prediction analysis"
 type: software
 version: 1.0.0
 date-released: 2026-07-20
@@ -17,3 +17,6 @@ authors:
 - family-names: "Vialaneix"
   given-names: "Nathalie"
 
+repository-code: "https://github.com/aldair31121997-wq/reviewing-data"
+url: "https://github.com/aldair31121997-wq/reviewing-data"
+license: GPL-3.0-only
